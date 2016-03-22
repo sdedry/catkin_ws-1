@@ -30,6 +30,12 @@ void init_gps_msg(sensor_msgs::NavSatFix* gps_msg)
 	gps_msg->latitude = 0.0f;
 	gps_msg->longitude = 0.0f;
 	gps_msg->altitude = 0.0f;
+
+  //Create a cov matrix of [1 0 0; 0 1 0; 0 0 1]
+	for(int i = 0; i < 9; i++)
+	{
+		gps_msg->position_covariance[i] = !(i%4);
+	}
 }
 
 void update_gps_msg(sensor_msgs::NavSatFix* gps_msg, std::vector<double> pos_data)
