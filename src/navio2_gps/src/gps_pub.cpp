@@ -63,7 +63,7 @@ void update_gps_msg(sensor_msgs::NavSatFix* gps_msg, std::vector<double> pos_dat
     }
 
 
-    if (gps.decodeSingleMessage(Ublox::NAV_STATUS, pos_data) == 1)
+    /*if (gps.decodeSingleMessage(Ublox::NAV_STATUS, pos_data) == 1)
     {
         ROS_INFO("Current GPS status:");
         ROS_INFO("gpsFixOk: %d", ((int)pos_data[1] & 0x01));
@@ -113,9 +113,9 @@ void update_gps_msg(sensor_msgs::NavSatFix* gps_msg, std::vector<double> pos_dat
    {
 	  /*gps_msg->latitude = prev_lat;
 	  gps_msg->longitude = prev_long;
-	  gps_msg->altitude = prev_alt;  */	
+	  gps_msg->altitude = prev_alt;  	
       ROS_INFO("Status Message not captured");
-   }
+   }*/
 
 }
 
