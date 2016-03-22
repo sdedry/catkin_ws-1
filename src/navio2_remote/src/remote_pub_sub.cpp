@@ -4,7 +4,10 @@
 #include <unistd.h>
 
 #include "ros/ros.h"
-#include "std_msgs/String.h"
+#include "std_msgs/Float64MultiArray.h"
+#include "std_msgs/MultiArrayLayout.h"
+#include "std_msgs/MultiArrayDimension.h"
+#include "std_msgs/Float64.h"
 #include <sstream>
 
 #define MOTOR_PWM_OUT 9
@@ -17,7 +20,7 @@ int main(int argc, char **argv)
 	/***********************/
 	ros::init(argc, argv, "remote_reading_handler");
 	ros::NodeHandle n;
-	//ros::Publisher remote_pub = n.advertise<sensor_msgs::Imu>("remote_readings", 1000);
+	ros::Publisher remote_pub = n.advertise<std_msgs::Float64MultiArray>("remote_readings", 1000);
 	
 	//running rate = 30 Hz
 	ros::Rate loop_rate(30);
@@ -50,6 +53,24 @@ int main(int argc, char **argv)
 	int motor_input = 0;
 	int servo_input = 0;
 
+	//msg stuff
+	//double a[] = {0.0, 0.0};
+	std_msgs::MultiArrayDimension dim;
+	//dim.size = sizeof(a);
+	//dim.label = "REMOTEmsg";
+	//dim.stride = sizeof(a);
+
+	std_msgs::Float64MultiArray apub;
+	apub.data.push_back((double)0.0);
+	apub.data.push_back((double)0.0);
+	//apub.data[0] = 0.0f;//a[0];
+	//apub.data[1] = 0.0f;//a[1];
+	apub.layout.dim.push_back(std_msgs::MultiArrayDimension());
+	apub.layout.dim[0].size = 2;
+	apub.layout.dim[0].label = "REMOTEmsg";
+	apub.layout.dim[0].stride = 2;
+	apub.layout.data_offset = 0;
+
 	while (ros::ok())
 	{
 
@@ -61,8 +82,17 @@ int main(int argc, char **argv)
 		motor.set_duty_cycle(MOTOR_PWM_OUT, ((float)motor_input)/1000.0f); 
 		servo.set_duty_cycle(SERVO_PWM_OUT, ((float)servo_input)/1000.0f);
 		
+		//save values into msg container a
+		apub.data[0] = motor_input;
+		apub.data[1] = servo_input;
+
 		//debug info
 		ROS_INFO("Thrust usec = %d    ---   Steering usec = %d", motor_input, servo_input);
+	
+		//apub.data[0] = a[0];
+		//apub.data[1] = a[1];
+
+		remote_pub.publish(apub);
 
 		/*sensor_msgs::Imu imu_msg;
 		sensor_msgs::MagneticField mf_msg;

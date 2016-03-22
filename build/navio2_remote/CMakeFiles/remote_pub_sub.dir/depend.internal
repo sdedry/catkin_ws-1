@@ -62,4 +62,7 @@ navio2_remote/CMakeFiles/remote_pub_sub.dir/src/remote_pub_sub.cpp.o
  /opt/ros/indigo/include/ros/wall_timer.h
  /opt/ros/indigo/include/ros/wall_timer_options.h
  /opt/ros/indigo/include/rosconsole/macros_generated.h
- /opt/ros/indigo/include/std_msgs/String.h
+ /opt/ros/indigo/include/std_msgs/Float64.h
+ /opt/ros/indigo/include/std_msgs/Float64MultiArray.h
+ /opt/ros/indigo/include/std_msgs/MultiArrayDimension.h
+ /opt/ros/indigo/include/std_msgs/MultiArrayLayout.h

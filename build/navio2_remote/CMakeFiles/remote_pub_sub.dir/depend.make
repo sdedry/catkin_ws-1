@@ -61,5 +61,8 @@ navio2_remote/CMakeFiles/remote_pub_sub.dir/src/remote_pub_sub.cpp.o: /opt/ros/i
 navio2_remote/CMakeFiles/remote_pub_sub.dir/src/remote_pub_sub.cpp.o: /opt/ros/indigo/include/ros/wall_timer.h
 navio2_remote/CMakeFiles/remote_pub_sub.dir/src/remote_pub_sub.cpp.o: /opt/ros/indigo/include/ros/wall_timer_options.h
 navio2_remote/CMakeFiles/remote_pub_sub.dir/src/remote_pub_sub.cpp.o: /opt/ros/indigo/include/rosconsole/macros_generated.h
-navio2_remote/CMakeFiles/remote_pub_sub.dir/src/remote_pub_sub.cpp.o: /opt/ros/indigo/include/std_msgs/String.h
+navio2_remote/CMakeFiles/remote_pub_sub.dir/src/remote_pub_sub.cpp.o: /opt/ros/indigo/include/std_msgs/Float64.h
+navio2_remote/CMakeFiles/remote_pub_sub.dir/src/remote_pub_sub.cpp.o: /opt/ros/indigo/include/std_msgs/Float64MultiArray.h
+navio2_remote/CMakeFiles/remote_pub_sub.dir/src/remote_pub_sub.cpp.o: /opt/ros/indigo/include/std_msgs/MultiArrayDimension.h
+navio2_remote/CMakeFiles/remote_pub_sub.dir/src/remote_pub_sub.cpp.o: /opt/ros/indigo/include/std_msgs/MultiArrayLayout.h
 
