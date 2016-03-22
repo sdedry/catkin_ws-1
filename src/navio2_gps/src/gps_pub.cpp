@@ -55,6 +55,9 @@ void update_gps_msg(sensor_msgs::NavSatFix* gps_msg, std::vector<double> pos_dat
 
 	else 
 	{
+	  gps_msg->latitude = pos_data[2]/10000000;
+	  gps_msg->longitude = pos_data[1]/10000000;
+	  gps_msg->altitude = pos_data[3]/1000;
       ROS_INFO("Message not captured");
     }
 
@@ -107,7 +110,10 @@ void update_gps_msg(sensor_msgs::NavSatFix* gps_msg, std::vector<double> pos_dat
 
    else 
    {
-        ROS_INFO("Status Message not captured");
+	  gps_msg->latitude = pos_data[2]/10000000;
+	  gps_msg->longitude = pos_data[1]/10000000;
+	  gps_msg->altitude = pos_data[3]/1000;   	
+      ROS_INFO("Status Message not captured");
    }
 
 }
@@ -180,7 +186,7 @@ int main(int argc, char *argv[]){
 
     } else {
 
-        printf("Ublox test not passed\nAbort program!\n");
+        ROS_INFO("Ublox test not passed\nAbort program!\n");
 
     }
 
