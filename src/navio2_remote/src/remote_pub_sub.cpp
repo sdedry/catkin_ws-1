@@ -54,17 +54,9 @@ int main(int argc, char **argv)
 	int servo_input = 0;
 
 	//msg stuff
-	//double a[] = {0.0, 0.0};
-	std_msgs::MultiArrayDimension dim;
-	//dim.size = sizeof(a);
-	//dim.label = "REMOTEmsg";
-	//dim.stride = sizeof(a);
-
 	std_msgs::Float64MultiArray apub;
 	apub.data.push_back((double)0.0);
 	apub.data.push_back((double)0.0);
-	//apub.data[0] = 0.0f;//a[0];
-	//apub.data[1] = 0.0f;//a[1];
 	apub.layout.dim.push_back(std_msgs::MultiArrayDimension());
 	apub.layout.dim[0].size = 2;
 	apub.layout.dim[0].label = "REMOTEmsg";
@@ -88,24 +80,9 @@ int main(int argc, char **argv)
 
 		//debug info
 		ROS_INFO("Thrust usec = %d    ---   Steering usec = %d", motor_input, servo_input);
-	
-		//apub.data[0] = a[0];
-		//apub.data[1] = a[1];
 
 		remote_pub.publish(apub);
 
-		/*sensor_msgs::Imu imu_msg;
-		sensor_msgs::MagneticField mf_msg;
-
-		init_imu_msg(&imu_msg);
-		init_mf_msg(&mf_msg);
-		
-		update_imu_msg(&imu_msg, sensor);
-		update_mf_msg(&mf_msg, sensor);
-
-		imu_pub.publish(imu_msg);
-		mf_pub.publish(mf_msg);
-		*/
 		ros::spinOnce();
 
 		loop_rate.sleep();
