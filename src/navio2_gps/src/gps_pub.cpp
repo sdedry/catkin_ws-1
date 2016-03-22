@@ -42,9 +42,9 @@ void update_gps_msg(sensor_msgs::NavSatFix* gps_msg, std::vector<double> pos_dat
 {
 	gps_msg->header.stamp = ros::Time::now();
 
-	gps_msg->latitude = pos_data[2];
-	gps_msg->longitude = pos_data[1];
-	gps_msg->altitude = pos_data[3];
+	gps_msg->latitude = pos_data[2]/1000;
+	gps_msg->longitude = pos_data[1]/1000;
+	gps_msg->altitude = pos_data[3]/1000;
 
 	ROS_INFO("GPS : Lat = %f, Long = %f, Alt = %f", pos_data[2], pos_data[1], pos_data[3]);
 }
