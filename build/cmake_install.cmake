@@ -117,6 +117,7 @@ endif()
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   include("/home/pi/catkin_ws/build/gtest/cmake_install.cmake")
+  include("/home/pi/catkin_ws/build/navio2_gps/cmake_install.cmake")
   include("/home/pi/catkin_ws/build/navio2_imu/cmake_install.cmake")
   include("/home/pi/catkin_ws/build/navio2_imu_pub/cmake_install.cmake")
   include("/home/pi/catkin_ws/build/navio2_remote/cmake_install.cmake")

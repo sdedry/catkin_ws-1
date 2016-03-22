@@ -154,48 +154,6 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
-navio2_imu_pub/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/rule:
-	cd /home/pi/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 navio2_imu_pub/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/rule
-.PHONY : navio2_imu_pub/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/rule
-
-# Convenience name for target.
-geometry_msgs_generate_messages_cpp: navio2_imu_pub/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/rule
-.PHONY : geometry_msgs_generate_messages_cpp
-
-# fast build rule for target.
-geometry_msgs_generate_messages_cpp/fast:
-	cd /home/pi/catkin_ws/build && $(MAKE) -f navio2_imu_pub/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/build.make navio2_imu_pub/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/build
-.PHONY : geometry_msgs_generate_messages_cpp/fast
-
-# Convenience name for target.
-navio2_imu_pub/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/rule:
-	cd /home/pi/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 navio2_imu_pub/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/rule
-.PHONY : navio2_imu_pub/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/rule
-
-# Convenience name for target.
-geometry_msgs_generate_messages_lisp: navio2_imu_pub/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/rule
-.PHONY : geometry_msgs_generate_messages_lisp
-
-# fast build rule for target.
-geometry_msgs_generate_messages_lisp/fast:
-	cd /home/pi/catkin_ws/build && $(MAKE) -f navio2_imu_pub/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/build.make navio2_imu_pub/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/build
-.PHONY : geometry_msgs_generate_messages_lisp/fast
-
-# Convenience name for target.
-navio2_imu_pub/CMakeFiles/geometry_msgs_generate_messages_py.dir/rule:
-	cd /home/pi/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 navio2_imu_pub/CMakeFiles/geometry_msgs_generate_messages_py.dir/rule
-.PHONY : navio2_imu_pub/CMakeFiles/geometry_msgs_generate_messages_py.dir/rule
-
-# Convenience name for target.
-geometry_msgs_generate_messages_py: navio2_imu_pub/CMakeFiles/geometry_msgs_generate_messages_py.dir/rule
-.PHONY : geometry_msgs_generate_messages_py
-
-# fast build rule for target.
-geometry_msgs_generate_messages_py/fast:
-	cd /home/pi/catkin_ws/build && $(MAKE) -f navio2_imu_pub/CMakeFiles/geometry_msgs_generate_messages_py.dir/build.make navio2_imu_pub/CMakeFiles/geometry_msgs_generate_messages_py.dir/build
-.PHONY : geometry_msgs_generate_messages_py/fast
-
-# Convenience name for target.
 navio2_imu_pub/CMakeFiles/imu.dir/rule:
 	cd /home/pi/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 navio2_imu_pub/CMakeFiles/imu.dir/rule
 .PHONY : navio2_imu_pub/CMakeFiles/imu.dir/rule
@@ -222,48 +180,6 @@ imu_pub: navio2_imu_pub/CMakeFiles/imu_pub.dir/rule
 imu_pub/fast:
 	cd /home/pi/catkin_ws/build && $(MAKE) -f navio2_imu_pub/CMakeFiles/imu_pub.dir/build.make navio2_imu_pub/CMakeFiles/imu_pub.dir/build
 .PHONY : imu_pub/fast
-
-# Convenience name for target.
-navio2_imu_pub/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/rule:
-	cd /home/pi/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 navio2_imu_pub/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/rule
-.PHONY : navio2_imu_pub/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/rule
-
-# Convenience name for target.
-sensor_msgs_generate_messages_cpp: navio2_imu_pub/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/rule
-.PHONY : sensor_msgs_generate_messages_cpp
-
-# fast build rule for target.
-sensor_msgs_generate_messages_cpp/fast:
-	cd /home/pi/catkin_ws/build && $(MAKE) -f navio2_imu_pub/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/build.make navio2_imu_pub/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/build
-.PHONY : sensor_msgs_generate_messages_cpp/fast
-
-# Convenience name for target.
-navio2_imu_pub/CMakeFiles/sensor_msgs_generate_messages_lisp.dir/rule:
-	cd /home/pi/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 navio2_imu_pub/CMakeFiles/sensor_msgs_generate_messages_lisp.dir/rule
-.PHONY : navio2_imu_pub/CMakeFiles/sensor_msgs_generate_messages_lisp.dir/rule
-
-# Convenience name for target.
-sensor_msgs_generate_messages_lisp: navio2_imu_pub/CMakeFiles/sensor_msgs_generate_messages_lisp.dir/rule
-.PHONY : sensor_msgs_generate_messages_lisp
-
-# fast build rule for target.
-sensor_msgs_generate_messages_lisp/fast:
-	cd /home/pi/catkin_ws/build && $(MAKE) -f navio2_imu_pub/CMakeFiles/sensor_msgs_generate_messages_lisp.dir/build.make navio2_imu_pub/CMakeFiles/sensor_msgs_generate_messages_lisp.dir/build
-.PHONY : sensor_msgs_generate_messages_lisp/fast
-
-# Convenience name for target.
-navio2_imu_pub/CMakeFiles/sensor_msgs_generate_messages_py.dir/rule:
-	cd /home/pi/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 navio2_imu_pub/CMakeFiles/sensor_msgs_generate_messages_py.dir/rule
-.PHONY : navio2_imu_pub/CMakeFiles/sensor_msgs_generate_messages_py.dir/rule
-
-# Convenience name for target.
-sensor_msgs_generate_messages_py: navio2_imu_pub/CMakeFiles/sensor_msgs_generate_messages_py.dir/rule
-.PHONY : sensor_msgs_generate_messages_py
-
-# fast build rule for target.
-sensor_msgs_generate_messages_py/fast:
-	cd /home/pi/catkin_ws/build && $(MAKE) -f navio2_imu_pub/CMakeFiles/sensor_msgs_generate_messages_py.dir/build.make navio2_imu_pub/CMakeFiles/sensor_msgs_generate_messages_py.dir/build
-.PHONY : sensor_msgs_generate_messages_py/fast
 
 src/LSM9DS1.o: src/LSM9DS1.cpp.o
 .PHONY : src/LSM9DS1.o
@@ -320,9 +236,6 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
-	@echo "... geometry_msgs_generate_messages_cpp"
-	@echo "... geometry_msgs_generate_messages_lisp"
-	@echo "... geometry_msgs_generate_messages_py"
 	@echo "... imu"
 	@echo "... imu_pub"
 	@echo "... install"
@@ -330,9 +243,6 @@ help:
 	@echo "... install/strip"
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
-	@echo "... sensor_msgs_generate_messages_cpp"
-	@echo "... sensor_msgs_generate_messages_lisp"
-	@echo "... sensor_msgs_generate_messages_py"
 	@echo "... test"
 	@echo "... src/LSM9DS1.o"
 	@echo "... src/LSM9DS1.i"

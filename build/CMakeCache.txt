@@ -311,6 +311,12 @@ lib:FILEPATH=/opt/ros/indigo/lib/libxmlrpcpp.so
 message_runtime_DIR:PATH=/opt/ros/indigo/share/message_runtime/cmake
 
 //Value Computed by CMake
+navio2_gps_BINARY_DIR:STATIC=/home/pi/catkin_ws/build/navio2_gps
+
+//Value Computed by CMake
+navio2_gps_SOURCE_DIR:STATIC=/home/pi/catkin_ws/src/navio2_gps
+
+//Value Computed by CMake
 navio2_imu_BINARY_DIR:STATIC=/home/pi/catkin_ws/build/navio2_imu
 
 //Value Computed by CMake
@@ -366,6 +372,9 @@ talker_test_BINARY_DIR:STATIC=/home/pi/catkin_ws/build/talker_test
 
 //Value Computed by CMake
 talker_test_SOURCE_DIR:STATIC=/home/pi/catkin_ws/src/talker_test
+
+//Dependencies for target
+ublox_LIB_DEPENDS:STATIC=
 
 //Dependencies for target
 util_LIB_DEPENDS:STATIC=
@@ -471,7 +480,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_LOCAL_GENERATORS:INTERNAL=6
+CMAKE_NUMBER_OF_LOCAL_GENERATORS:INTERNAL=7
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP
