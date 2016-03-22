@@ -44,6 +44,10 @@ void update_gps_msg(sensor_msgs::NavSatFix* gps_msg, std::vector<double> pos_dat
 {
 	gps_msg->header.stamp = ros::Time::now();
 
+	float prev_lat = gps_msg->latitude;
+	float prev_long = gps_msg->longitude;
+	float prev_alt = gps_msg->altitude;
+
 	if (gps.decodeSingleMessage(Ublox::NAV_POSLLH, pos_data) == 1)
     {
 		gps_msg->latitude = pos_data[2]/10000000;
@@ -55,9 +59,9 @@ void update_gps_msg(sensor_msgs::NavSatFix* gps_msg, std::vector<double> pos_dat
 
 	else 
 	{
-	  gps_msg->latitude = pos_data[2]/10000000;
-	  gps_msg->longitude = pos_data[1]/10000000;
-	  gps_msg->altitude = pos_data[3]/1000;
+	  gps_msg->latitude = prev_lat;
+	  gps_msg->longitude = prev_long;
+	  gps_msg->altitude = prev_alt;
       ROS_INFO("Message not captured");
     }
 
@@ -110,9 +114,9 @@ void update_gps_msg(sensor_msgs::NavSatFix* gps_msg, std::vector<double> pos_dat
 
    else 
    {
-	  gps_msg->latitude = pos_data[2]/10000000;
-	  gps_msg->longitude = pos_data[1]/10000000;
-	  gps_msg->altitude = pos_data[3]/1000;   	
+	  gps_msg->latitude = prev_lat;
+	  gps_msg->longitude = prev_long;
+	  gps_msg->altitude = prev_alt;  	
       ROS_INFO("Status Message not captured");
    }
 
