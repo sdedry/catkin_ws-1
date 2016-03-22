@@ -44,10 +44,7 @@ void update_gps_msg(sensor_msgs::NavSatFix* gps_msg, std::vector<double> pos_dat
 {
 	gps_msg->header.stamp = ros::Time::now();
 
-	float prev_lat = gps_msg->latitude;
-	float prev_long = gps_msg->longitude;
-	float prev_alt = gps_msg->altitude;
-
+	
 	if (gps.decodeSingleMessage(Ublox::NAV_POSLLH, pos_data) == 1)
     {
 		gps_msg->latitude = pos_data[2]/10000000;
@@ -128,7 +125,7 @@ int main(int argc, char *argv[]){
 	ros::NodeHandle n;
 	ros::Publisher gps_pub = n.advertise<sensor_msgs::NavSatFix>("gps_readings", 1000);
 
-	ros::Rate loop_rate(10);
+	ros::Rate loop_rate(2);
 
     if (check_apm()) {
         return 1;
@@ -184,7 +181,7 @@ int main(int argc, char *argv[]){
             printf("Horizontal Accuracy Estateimate: %.3lf m\n", pos_data[5]/1000);
 	        printf("Vertical Accuracy Estateimate: %.3lf m\n", pos_data[6]/1000);*/
 
-            usleep(200);
+            //usleep(200);
         }
 
     } else {
