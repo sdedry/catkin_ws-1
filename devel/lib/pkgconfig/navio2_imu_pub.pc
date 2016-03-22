@@ -1,8 +1,0 @@
-prefix=/home/pi/catkin_ws/devel
-
-Name: navio2_imu_pub
-Description: Description of navio2_imu_pub
-Version: 0.0.0
-Cflags: 
-Libs: -L/home/pi/catkin_ws/devel/lib 
-Requires: 
