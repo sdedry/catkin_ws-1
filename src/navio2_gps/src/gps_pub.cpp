@@ -87,13 +87,11 @@ int main(int argc, char *argv[]){
         // this function waits for a message of a specified type and gets you just the information you need
         // In this example we decode NAV_STATUS and NAV-POSLLH messages, adding new types, however is quite easy
 
-        while (true)
-        {
+        while (ros::ok())
+        {		
 
             if (gps.decodeSingleMessage(Ublox::NAV_POSLLH, pos_data) == 1)
             {
-            	while(ros::ok())
-            	{
             		sensor_msgs::NavSatFix gps_msg;
             		init_gps_msg(&gps_msg);
 
@@ -114,7 +112,6 @@ int main(int argc, char *argv[]){
 	                printf("Height above mean sea level: %.3lf m\n", pos_data[4]/1000);
 	                printf("Horizontal Accuracy Estateimate: %.3lf m\n", pos_data[5]/1000);
 	                printf("Vertical Accuracy Estateimate: %.3lf m\n", pos_data[6]/1000);*/
-            	}
 
             } else {
                 // printf("Message not captured\n");
