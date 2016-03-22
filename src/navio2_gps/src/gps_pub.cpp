@@ -67,37 +67,37 @@ void update_gps_msg(sensor_msgs::NavSatFix* gps_msg, std::vector<double> pos_dat
         ROS_INFO("gps Fix status: ");
         switch((int)pos_data[0]){
             case 0x00:
-            	gps_msg->status = -1;
+            	gps_msg->status->satus = -1;
                 ROS_INFO("no fix");
                 break;
 
             case 0x01:
-            	gps_msg->status = -1;
+            	gps_msg->status->satus = -1;
                 ROS_INFO("dead reckoning only");
                 break;
 
             case 0x02:
-            	gps_msg->status = 0;
+            	gps_msg->status->satus = 0;
                 ROS_INFO("2D-fix");
                 break;
 
             case 0x03:
-            	gps_msg->status = 0;
+            	gps_msg->status->satus = 0;
                 ROS_INFO("3D-fix");
                 break;
 
             case 0x04:
-            	gps_msg->status = -1;
+            	gps_msg->status->satus = -1;
                 ROS_INFO("GPS + dead reckoning combined");
                 break;
 
             case 0x05:
-            	gps_msg->status = -1;
+            	gps_msg->status->satus = -1;
                 ROS_INFO("Time only fix");
                 break;
 
             default:
-            	gps_msg->status = -1;
+            	gps_msg->status->satus = -1;
                 ROS_INFO("Reserved value. Current state unknown");
                 break;
 
