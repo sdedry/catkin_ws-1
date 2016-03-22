@@ -91,7 +91,7 @@ int main(int argc, char *argv[]){
             		sensor_msgs::NavSatFix gps_msg;
             		init_gps_msg(&gps_msg);
 
-            		update_gps_msg(&gps_msg);
+            		update_gps_msg(&gps_msg, pos_data);
 
             		gps_pub.publish(gps_msg);
 
