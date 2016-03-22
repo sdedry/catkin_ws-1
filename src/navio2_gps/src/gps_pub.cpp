@@ -61,8 +61,8 @@ void update_gps_msg(sensor_msgs::NavSatFix* gps_msg, std::vector<double> pos_dat
 	{
 	  /*gps_msg->latitude = prev_lat;
 	  gps_msg->longitude = prev_long;
-	  gps_msg->altitude = prev_alt;
-      ROS_INFO("Message not captured");*/
+	  gps_msg->altitude = prev_alt;*/
+      ROS_INFO("Message not captured");
     }
 
 
@@ -84,7 +84,7 @@ void update_gps_msg(sensor_msgs::NavSatFix* gps_msg, std::vector<double> pos_dat
                 break;
 
             case 0x02:
-            	gps_msg->status.status = 0;
+            	gps_msg->status.status = -1;
                 ROS_INFO("2D-fix");
                 break;
 
@@ -116,8 +116,8 @@ void update_gps_msg(sensor_msgs::NavSatFix* gps_msg, std::vector<double> pos_dat
    {
 	  /*gps_msg->latitude = prev_lat;
 	  gps_msg->longitude = prev_long;
-	  gps_msg->altitude = prev_alt;  	
-      ROS_INFO("Status Message not captured");*/
+	  gps_msg->altitude = prev_alt;  */	
+      ROS_INFO("Status Message not captured");
    }
 
 }
@@ -128,7 +128,7 @@ int main(int argc, char *argv[]){
 	ros::NodeHandle n;
 	ros::Publisher gps_pub = n.advertise<sensor_msgs::NavSatFix>("gps_readings", 1000);
 
-	ros::Rate loop_rate(30);
+	ros::Rate loop_rate(10);
 
     if (check_apm()) {
         return 1;
