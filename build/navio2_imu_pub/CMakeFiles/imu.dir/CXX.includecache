@@ -1,0 +1,44 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/pi/catkin_ws/src/navio2_imu_pub/include/InertialSensor.h
+
+/home/pi/catkin_ws/src/navio2_imu_pub/include/LSM9DS1.h
+stdint.h
+-
+SPIdev.h
+/home/pi/catkin_ws/src/navio2_imu_pub/include/SPIdev.h
+InertialSensor.h
+/home/pi/catkin_ws/src/navio2_imu_pub/include/InertialSensor.h
+
+/home/pi/catkin_ws/src/navio2_imu_pub/include/SPIdev.h
+unistd.h
+-
+fcntl.h
+-
+sys/ioctl.h
+-
+linux/types.h
+-
+linux/spi/spidev.h
+-
+sys/socket.h
+-
+netdb.h
+-
+cstdlib
+-
+cstring
+-
+cstdio
+-
+
+/home/pi/catkin_ws/src/navio2_imu_pub/src/LSM9DS1.cpp
+LSM9DS1.h
+/home/pi/catkin_ws/src/navio2_imu_pub/src/LSM9DS1.h
+

@@ -1,0 +1,7 @@
+set(_CATKIN_CURRENT_PACKAGE "navio2_imu_pub")
+set(navio2_imu_pub_MAINTAINER "pi <pi@todo.todo>")
+set(navio2_imu_pub_DEPRECATED "")
+set(navio2_imu_pub_VERSION "0.0.0")
+set(navio2_imu_pub_BUILD_DEPENDS "roscpp" "rospy" "std_msgs" "sensor_msgs")
+set(navio2_imu_pub_RUN_DEPENDS "roscpp" "rospy" "std_msgs" "sensor_msgs")
+set(navio2_imu_pub_BUILDTOOL_DEPENDS "catkin")

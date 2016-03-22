@@ -1,0 +1,7 @@
+set(_CATKIN_CURRENT_PACKAGE "talker_test")
+set(talker_test_MAINTAINER "pi <pi@todo.todo>")
+set(talker_test_DEPRECATED "")
+set(talker_test_VERSION "0.0.0")
+set(talker_test_BUILD_DEPENDS "roscpp" "std_msgs")
+set(talker_test_RUN_DEPENDS "roscpp" "std_msgs")
+set(talker_test_BUILDTOOL_DEPENDS "catkin")
