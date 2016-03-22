@@ -160,12 +160,11 @@ int main(int argc, char *argv[]){
         // this function waits for a message of a specified type and gets you just the information you need
         // In this example we decode NAV_STATUS and NAV-POSLLH messages, adding new types, however is quite easy
 
+        sensor_msgs::NavSatFix gps_msg;
+        init_gps_msg(&gps_msg);	
+
         while (ros::ok())
         {	
-            sensor_msgs::NavSatFix gps_msg;
-            init_gps_msg(&gps_msg);	
-
-
 
             update_gps_msg(&gps_msg, pos_data, gps);
 
