@@ -18,9 +18,44 @@ make
 #include "Ublox.h"
 #include "Util.h"
 
+#include "ros/ros.h"
+#include "sensor_msgs/NavSatFix.h"
+
 using namespace std;
 
+void init_gps_msg(sensor_msgs::NavSatFix* gps_msg)
+{
+	gps_msg->header.stamp = ros::Time::now();
+
+	gps_msg->latitude = 0.0f;
+	gps_msg->longitude = 0.0f;
+	gps_msg->altitude = 0.0f;
+
+  //Create a cov matrix of [1 0 0; 0 1 0; 0 0 1]
+	for(int i = 0; i < 9; i++)
+	{
+		gps_msg->position_covariance[i] = !(i%4);
+	}
+}
+
+void update_gps_msg(sensor_msgs::NavSatFix* gps_msg, std::vector<double> pos_data)
+{
+	gps_msg->header.stamp = ros::Time::now();
+
+	gps_msg->latitude = pos_data[2]/10000000;
+	gps_msg->longitude = pos_data[1]/10000000;
+	gps_msg->altitude = pos_data[3]/1000;
+
+	ROS_INFO("GPS : Lat = %f, Long = %f, Alt = %f", pos_data[2]/10000000, pos_data[1]/10000000, pos_data[3]/1000);
+}
+
 int main(int argc, char *argv[]){
+
+	ros::init(argc, argv, "gps_handler");
+	ros::NodeHandle n;
+	ros::Publisher gps_pub = n.advertise<sensor_msgs::NavSatFix>("gps_readings", 1000);
+
+	ros::Rate loop_rate(2);
 
     if (check_apm()) {
         return 1;
@@ -52,21 +87,31 @@ int main(int argc, char *argv[]){
         // this function waits for a message of a specified type and gets you just the information you need
         // In this example we decode NAV_STATUS and NAV-POSLLH messages, adding new types, however is quite easy
 
-        while (true)
-        {
+        while (ros::ok())
+        {		
 
             if (gps.decodeSingleMessage(Ublox::NAV_POSLLH, pos_data) == 1)
             {
-                // after desired message is successfully decoded, we can use the information stored in pos_data vector
-                // right here, or we can do something with it from inside decodeSingleMessage() function(see ublox.h).
-                // the way, data is stored in pos_data vector is specified in decodeMessage() function of class UBXParser(see ublox.h)
-                printf("GPS Millisecond Time of Week: %.0lf s\n", pos_data[0]/1000);
-                printf("Longitude: %lf\n", pos_data[1]/10000000);
-                printf("Latitude: %lf\n", pos_data[2]/10000000);
-                printf("Height above Ellipsoid: %.3lf m\n", pos_data[3]/1000);
-                printf("Height above mean sea level: %.3lf m\n", pos_data[4]/1000);
-                printf("Horizontal Accuracy Estateimate: %.3lf m\n", pos_data[5]/1000);
-                printf("Vertical Accuracy Estateimate: %.3lf m\n", pos_data[6]/1000);
+            		sensor_msgs::NavSatFix gps_msg;
+            		init_gps_msg(&gps_msg);
+
+            		update_gps_msg(&gps_msg, pos_data);
+
+            		gps_pub.publish(gps_msg);
+
+            		ros::spinOnce();
+
+            		loop_rate.sleep();
+	                // after desired message is successfully decoded, we can use the information stored in pos_data vector
+	                // right here, or we can do something with it from inside decodeSingleMessage() function(see ublox.h).
+	                // the way, data is stored in pos_data vector is specified in decodeMessage() function of class UBXParser(see ublox.h)
+	                /*printf("GPS Millisecond Time of Week: %.0lf s\n", pos_data[0]/1000);
+	                printf("Longitude: %lf\n", pos_data[1]/10000000);
+	                printf("Latitude: %lf\n", pos_data[2]/10000000);
+	                printf("Height above Ellipsoid: %.3lf m\n", pos_data[3]/1000);
+	                printf("Height above mean sea level: %.3lf m\n", pos_data[4]/1000);
+	                printf("Horizontal Accuracy Estateimate: %.3lf m\n", pos_data[5]/1000);
+	                printf("Vertical Accuracy Estateimate: %.3lf m\n", pos_data[6]/1000);*/
 
             } else {
                 // printf("Message not captured\n");
