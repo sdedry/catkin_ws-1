@@ -59,10 +59,10 @@ void update_gps_msg(sensor_msgs::NavSatFix* gps_msg, std::vector<double> pos_dat
 
 	else 
 	{
-	  gps_msg->latitude = prev_lat;
+	  /*gps_msg->latitude = prev_lat;
 	  gps_msg->longitude = prev_long;
 	  gps_msg->altitude = prev_alt;
-      ROS_INFO("Message not captured");
+      ROS_INFO("Message not captured");*/
     }
 
 
@@ -114,10 +114,10 @@ void update_gps_msg(sensor_msgs::NavSatFix* gps_msg, std::vector<double> pos_dat
 
    else 
    {
-	  gps_msg->latitude = prev_lat;
+	  /*gps_msg->latitude = prev_lat;
 	  gps_msg->longitude = prev_long;
 	  gps_msg->altitude = prev_alt;  	
-      ROS_INFO("Status Message not captured");
+      ROS_INFO("Status Message not captured");*/
    }
 
 }
