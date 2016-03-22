@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>navio2_imu_pub</name>
+  <name>navio2_imu</name>
   <version>0.0.0</version>
-  <description>The navio2_imu_pub package</description>
+  <description>The navio2_imu package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 
   <!-- Example:  -->
