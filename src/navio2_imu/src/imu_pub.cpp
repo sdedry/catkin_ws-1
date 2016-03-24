@@ -53,7 +53,7 @@ void imuSetup()
 	for(int i = 0; i<100; i++)
 	{
 		imu->update();
-    imu->read_gyroscope(&gx, &gy, &gz);
+    imu->read_gyroscope(&gy, &gx, &gz);
 
     gx *= 180 / PI;
     gy *= 180 / PI;
@@ -108,22 +108,23 @@ void imuLoop()
     // Soft and hard iron calibration required for proper function.
     
     imu->update();
-    imu->read_accelerometer(&ax, &ay, &az);
-    imu->read_gyroscope(&gx, &gy, &gz);
-    imu->read_magnetometer(&mx, &my, &mz);
+    imu->read_accelerometer(&ay, &ax, &az);
+    imu->read_gyroscope(&gy, &gx, &gz);
+    imu->read_magnetometer(&my, &mx, &mz);
 
-    ax /= G_SI;
-    ay /= G_SI;
+    ax /= -G_SI;
+    ay /= -G_SI;
     az /= G_SI;
     gx *= 180 / PI;
     gy *= 180 / PI;
-    gz *= 180 / PI;
+    gz *= -180 / PI;
 
     ahrs.update(ax, ay, az, gx*0.0175, gy*0.0175, gz*0.0175, my, mx, -mz, dt);
     
 
     //------------------------ Read Euler angles ------------------------------
 
+    //ahrs.getEuler(&pitch, &roll, &yaw);//roll and pitch inverted 
     ahrs.getEuler(&roll, &pitch, &yaw);
 
     //------------------- Discard the time of the first cycle -----------------
@@ -193,7 +194,7 @@ void update_imu_msg(sensor_msgs::Imu* imu_msg, InertialSensor* imu)
 
 	imu_msg->orientation.x = roll;
 	imu_msg->orientation.y = pitch;
-	imu_msg->orientation.z = yaw*-1;
+	imu_msg->orientation.z = yaw;
 	imu_msg->orientation.w = dt;
 
 	imu_msg->angular_velocity.x = gx;
@@ -206,7 +207,7 @@ void update_imu_msg(sensor_msgs::Imu* imu_msg, InertialSensor* imu)
 
 	ROS_INFO("Accelerometer : X = %+7.3f, Y = %+7.3f, Z = %+7.3f", ax, ay, az);
 	ROS_INFO("Gyroscope : X = %+7.3f, Y = %+7.3f, Z = %+7.3f", gx, gy, gz);
-	ROS_INFO("ROLL: %+05.2f PITCH: %+05.2f YAW: %+05.2f PERIOD %.4fs RATE %dHz \n", roll, pitch, yaw * -1, dt, int(1/dt));
+	ROS_INFO("ROLL: %+05.2f PITCH: %+05.2f YAW: %+05.2f PERIOD %.4fs RATE %dHz \n", roll, pitch, yaw, dt, int(1/dt));
 }
 
 void update_mf_msg(sensor_msgs::MagneticField* mf_msg, InertialSensor* imu)
