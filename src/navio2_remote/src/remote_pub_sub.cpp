@@ -21,7 +21,8 @@ int main(int argc, char **argv)
 	/***********************/
 	ros::init(argc, argv, "remote_reading_handler");
 	ros::NodeHandle n;
-	ros::Publisher remote_pub = n.advertise<std_msgs::Float64MultiArray>("remote_readings", 1000);
+	//ros::Publisher remote_pub = n.advertise<std_msgs::Float64MultiArray>("remote_readings", 1000);
+	ros::Publisher remote_pub = n.advertise<sensor_msgs::Temperature>("remote_readings", 1000);
 	
 	//running rate = 30 Hz
 	ros::Rate loop_rate(30);
@@ -81,7 +82,7 @@ int main(int argc, char **argv)
 		//save values into msg container a
 		//apub.data[0] = motor_input;
 		//apub.data[1] = servo_input;
-		rem_msg->header.stamp = ros::Time::now();
+		rem_msg.header.stamp = ros::Time::now();
 		rem_msg.temperature = motor_input;
 		rem_msg.variance = servo_input;
 
