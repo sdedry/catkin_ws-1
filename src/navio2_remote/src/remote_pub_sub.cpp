@@ -4,10 +4,11 @@
 #include <unistd.h>
 
 #include "ros/ros.h"
-#include "std_msgs/Float64MultiArray.h"
-#include "std_msgs/MultiArrayLayout.h"
-#include "std_msgs/MultiArrayDimension.h"
-#include "std_msgs/Float64.h"
+//#include "std_msgs/Float64MultiArray.h"
+//#include "std_msgs/MultiArrayLayout.h"
+//#include "std_msgs/MultiArrayDimension.h"
+#include "sensor_msgs/Temperature.h"
+//#include "std_msgs/Float64.h"
 #include <sstream>
 
 #define MOTOR_PWM_OUT 9
@@ -54,6 +55,7 @@ int main(int argc, char **argv)
 	int servo_input = 0;
 
 	//msg stuff
+	/*
 	std_msgs::Float64MultiArray apub;
 	apub.data.push_back((double)0.0);
 	apub.data.push_back((double)0.0);
@@ -62,6 +64,8 @@ int main(int argc, char **argv)
 	apub.layout.dim[0].label = "REMOTEmsg";
 	apub.layout.dim[0].stride = 2;
 	apub.layout.data_offset = 0;
+	*/
+	sensor_msgs::Temperature rem_msg;
 
 	while (ros::ok())
 	{
@@ -75,14 +79,18 @@ int main(int argc, char **argv)
 		servo.set_duty_cycle(SERVO_PWM_OUT, ((float)servo_input)/1000.0f);
 		
 		//save values into msg container a
-		apub.data[0] = motor_input;
-		apub.data[1] = servo_input;
+		//apub.data[0] = motor_input;
+		//apub.data[1] = servo_input;
+		rem_msg->header.stamp = ros::Time::now();
+		rem_msg.temperature = motor_input;
+		rem_msg.variance = servo_input;
 
 		//debug info
 		ROS_INFO("Thrust usec = %d    ---   Steering usec = %d", motor_input, servo_input);
 
-		remote_pub.publish(apub);
-
+		//remote_pub.publish(apub);
+		remote_pub.publish(rem_msg);
+		
 		ros::spinOnce();
 
 		loop_rate.sleep();
