@@ -16,12 +16,15 @@
 
 int main(int argc, char **argv)
 {
+	ROS_INFO("Start");
 	int saturation = 2000;
+
+	ROS_INFO("argc %d", argc);
 	if(argc > 1)
 	{
 		//case where there is a saturation request
-		if(argv[1] > 2000) saturation = 2000;
-		else saturation = argv[1];
+		if(atoi(argv[1]) > 2000) saturation = 2000;
+		else saturation = atoi(argv[1]);
 		ROS_INFO("saturation  : %d", saturation);
 	}
 
