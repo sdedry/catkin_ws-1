@@ -54,7 +54,8 @@ void imuSetup()
 	{
 		imu->update();
     imu->read_gyroscope(&gy, &gx, &gz);
-	gz = -gz;
+	gx *= -1;
+	gy *= -1;
 
     gx *= 180 / PI;
     gy *= 180 / PI;
@@ -94,9 +95,11 @@ void imuLoop()
 	
     imu->update();
     imu->read_accelerometer(&ay, &ax, &az);
-	az = -az;
+	ax *= -1;
+	ay *= -1;
     imu->read_gyroscope(&gy, &gx, &gz);
-	gz = -gz;
+	gy *= -1;
+	gx *= -1;
 
     ax /= G_SI;
     ay /= G_SI;
