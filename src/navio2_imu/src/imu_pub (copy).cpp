@@ -54,7 +54,6 @@ void imuSetup()
 	{
 		imu->update();
     imu->read_gyroscope(&gy, &gx, &gz);
-	gz = -gz;
 
     gx *= 180 / PI;
     gy *= 180 / PI;
@@ -91,12 +90,10 @@ void imuLoop()
     //-------- Read raw measurements from the MPU and update AHRS --------------
 
     // Accel + gyro.
-	
+	/*
     imu->update();
-    imu->read_accelerometer(&ay, &ax, &az);
-	az = -az;
-    imu->read_gyroscope(&gy, &gx, &gz);
-	gz = -gz;
+    imu->read_accelerometer(&ax, &ay, &az);
+    imu->read_gyroscope(&gx, &gy, &gz);
 
     ax /= G_SI;
     ay /= G_SI;
@@ -106,10 +103,10 @@ void imuLoop()
     gz *= 180 / PI;
 
     ahrs.updateIMU(ax, ay, az, gx*0.0175, gy*0.0175, gz*0.0175, dt);
-    	
+    	*/
     // Accel + gyro + mag.
     // Soft and hard iron calibration required for proper function.
-    /*
+    
     imu->update();
     imu->read_accelerometer(&ay, &ax, &az);
     imu->read_gyroscope(&gy, &gx, &gz);
@@ -123,7 +120,7 @@ void imuLoop()
     gz *= -180 / PI;
 
     ahrs.update(ax, ay, az, gx*0.0175, gy*0.0175, gz*0.0175, my, mx, -mz, dt);
-    */
+    
 
     //------------------------ Read Euler angles ------------------------------
 
@@ -236,7 +233,7 @@ int main(int argc, char **argv)
  	/***********************/
 	/* Initialize The Node */
 	/***********************/
-	ros::init(argc, argv, "imu_mpu9250_handler");
+	ros::init(argc, argv, "imu_lsm9ds1_handler");
 	ros::NodeHandle n;
 	ros::Publisher imu_pub = n.advertise<sensor_msgs::Imu>("imu_readings", 1000);
 	ros::Publisher mf_pub = n.advertise<sensor_msgs::MagneticField>("mag_readings", 1000);
@@ -248,8 +245,8 @@ int main(int argc, char **argv)
 	/* Initialize the Sensor */
 	/*************************/
 
-	printf("Selected: MPU9250\n");
-	imu = new MPU9250();
+	printf("Selected: LSM9DS1\n");
+	imu = new LSM9DS1();
 
 	/***************/
 	/* Test Sensor */
