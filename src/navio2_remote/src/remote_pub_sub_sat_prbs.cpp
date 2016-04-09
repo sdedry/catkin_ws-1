@@ -97,8 +97,9 @@ int main(int argc, char **argv)
 	int start_state = 0x7D0;
 	int lfsr = start_state;
 
-	steer_low = 1500 - prbs_val;
-	steer_high= 1500 + prbs_val;
+	int steer_low = 1500 - prbs_val;
+	int steer_high= 1500 + prbs_val;
+	int steer_prbs = steer_low;
 
 	while (ros::ok())
 	{
@@ -111,7 +112,7 @@ int main(int argc, char **argv)
 
 		//servo control with prbs
 		servo_input = rcin.read(2);
-		bit = ((lfsr >> 0) ^ (lfsr >> 2)) & 1;
+		int bit = ((lfsr >> 0) ^ (lfsr >> 2)) & 1;
 		lfsr = (lfsr >> 1) | (bit << 10);
 
 		if (bit == 1)
