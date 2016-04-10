@@ -113,11 +113,10 @@ void imuLoop()
     
     imu->update();
     imu->read_accelerometer(&ay, &ax, &az);
-	ax *= -1;
-	ay *= -1;
+	az *= -1;
     imu->read_gyroscope(&gy, &gx, &gz);
 	gz *= -1;
-    imu->read_magnetometer(&my, &mx, &mz);
+    imu->read_magnetometer(&mx, &my, &mz);
 
     ax /= G_SI;
     ay /= G_SI;
@@ -126,7 +125,7 @@ void imuLoop()
     gy *= 180 / PI;
     gz *= 180 / PI;
 
-    ahrs.update(ax, ay, az, gx*0.0175, gy*0.0175, gz*0.0175, my, mx, mz, dt);
+   ahrs.update(-ax, -ay, -az, gx*0.0175, gy*0.0175, gz*0.0175, mx, my, mz, dt);
     
 
     //------------------------ Read Euler angles ------------------------------
@@ -208,11 +207,11 @@ void update_imu_msg(sensor_msgs::Imu* imu_msg, InertialSensor* imu)
 	imu_msg->angular_velocity.y = gy;
 	imu_msg->angular_velocity.z = gz;
 
-	imu_msg->linear_acceleration.x = ax;
-	imu_msg->linear_acceleration.y = ay;
-	imu_msg->linear_acceleration.z = az;
+	imu_msg->linear_acceleration.x = ax*G_SI;
+	imu_msg->linear_acceleration.y = ay*G_SI;
+	imu_msg->linear_acceleration.z = az*G_SI;
 
-	ROS_INFO("Accelerometer : X = %+7.3f, Y = %+7.3f, Z = %+7.3f", ax, ay, az);
+	ROS_INFO("Accelerometer : X = %+7.3f, Y = %+7.3f, Z = %+7.3f", ax*G_SI, ay*G_SI, az*G_SI);
 	ROS_INFO("Gyroscope : X = %+7.3f, Y = %+7.3f, Z = %+7.3f", gx, gy, gz);
 	ROS_INFO("ROLL: %+05.2f PITCH: %+05.2f YAW: %+05.2f PERIOD %.4fs RATE %dHz \n", roll, pitch, yaw, dt, int(1/dt));
 }
