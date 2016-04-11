@@ -69,7 +69,7 @@ int main(int argc, char **argv)
 		}
 	
 		if(atoi(argv[3]) > 2000) saturation = 2000;
-		else saturation = atoi(argv[2]);
+		else saturation = atoi(argv[3]);
 	}
 	else
 	{
