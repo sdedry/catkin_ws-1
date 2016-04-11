@@ -41,8 +41,8 @@ int main(int argc, char **argv)
 			return 0;
 		}
 	
-		if(argv[2] > 0 )
-			freq = argv[2];
+		if(atoi(argv[2]) > 0 )
+			freq = atoi(argv[2]);
 		else
 		{
 			ROS_INFO("Frequency must be more than 0");
