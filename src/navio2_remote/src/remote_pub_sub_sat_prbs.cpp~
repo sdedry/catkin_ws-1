@@ -16,6 +16,7 @@ int main(int argc, char **argv)
 	int saturation = 2000;
 
 	int prbs_val = 120; //default prbs signal
+	int freq = 30;
 
 	ROS_INFO("number of argc %d", argc);
 
@@ -31,7 +32,7 @@ int main(int argc, char **argv)
 	}
 	else if(argc == 3)
 	{
-		//case with prbs and saturation
+		//case with prbs and freq
 
 		prbs_val = atoi(argv[1]);
 		if(prbs_val > 500 || prbs_val < 0)
@@ -40,7 +41,34 @@ int main(int argc, char **argv)
 			return 0;
 		}
 	
-		if(atoi(argv[2]) > 2000) saturation = 2000;
+		if(argv[2] > 0 )
+			freq = argv[2];
+		else
+		{
+			ROS_INFO("Frequency must be more than 0");
+			return 0;
+		}
+	}
+	else if(argc == 4)
+	{
+		//case with prbs and freq saturation
+
+		prbs_val = atoi(argv[1]);
+		if(prbs_val > 500 || prbs_val < 0)
+		{
+			ROS_INFO("prbs val must be between 0 and 500");
+			return 0;
+		}
+
+		if(argv[2] > 0 )
+			freq = argv[2];
+		else
+		{
+			ROS_INFO("Frequency must be more than 0");
+			return 0;
+		}
+	
+		if(atoi(argv[3]) > 2000) saturation = 2000;
 		else saturation = atoi(argv[2]);
 	}
 	else
@@ -60,8 +88,8 @@ int main(int argc, char **argv)
 	//ros::Publisher remote_pub = n.advertise<std_msgs::Float64MultiArray>("remote_readings", 1000);
 	ros::Publisher remote_pub = n.advertise<sensor_msgs::Temperature>("remote_readings", 1000);
 	
-	//running rate = 30 Hz
-	ros::Rate loop_rate(30);
+	//running rate = freq Hz
+	ros::Rate loop_rate(freq);
 
 	/*******************************************/
 	/* Initialize the RC input, and PWM output */
@@ -97,8 +125,9 @@ int main(int argc, char **argv)
 	int start_state = 0x7D0;
 	int lfsr = start_state;
 
-	steer_low = 1500 - prbs_val;
-	steer_high= 1500 + prbs_val;
+	int steer_low = 1500 - prbs_val;
+	int steer_high= 1500 + prbs_val;
+	int steer_prbs = steer_low;
 
 	while (ros::ok())
 	{
@@ -111,8 +140,20 @@ int main(int argc, char **argv)
 
 		//servo control with prbs
 		servo_input = rcin.read(2);
-		bit = ((lfsr >> 0) ^ (lfsr >> 2)) & 1;
+		int bit = ((lfsr >> 0) ^ (lfsr >> 2)) & 1;
 		lfsr = (lfsr >> 1) | (bit << 10);
+
+		if (bit == 1)
+			steer_prbs = steer_high;
+		else if (bit == 0)
+			steer_prbs = steer_low;
+		else
+			steer_prbs = servo_input;
+
+		if (servo_input > steer_high || servo_input < steer_low)
+			servo_input = servo_input;
+		else
+			servo_input = steer_prbs;
 		
 		//write readings on pwm output
 		motor.set_duty_cycle(MOTOR_PWM_OUT, ((float)motor_input)/1000.0f); 

@@ -236,6 +236,24 @@ void update_mf_msg(sensor_msgs::MagneticField* mf_msg, InertialSensor* imu)
 
 int main(int argc, char **argv)
 {
+	int freq = 30;
+
+	if(argc == 2)
+	{
+		if(argv[1] > 0)
+		{
+			freq = argv[1];
+			printf("Frequency selected : %d \n", freq);
+		}
+		else
+		{
+			printf("Frequency must be more than 0");
+			return 0;
+		}
+	}
+		
+
+
  	/***********************/
 	/* Initialize The Node */
 	/***********************/
@@ -245,7 +263,7 @@ int main(int argc, char **argv)
 	ros::Publisher mf_pub = n.advertise<sensor_msgs::MagneticField>("mag_readings", 1000);
 
 	//running rate = 30 Hz
-	ros::Rate loop_rate(30);
+	ros::Rate loop_rate(freq);
 
 	/*************************/
 	/* Initialize the Sensor */

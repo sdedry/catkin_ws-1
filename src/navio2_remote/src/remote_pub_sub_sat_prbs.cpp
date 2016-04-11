@@ -16,6 +16,7 @@ int main(int argc, char **argv)
 	int saturation = 2000;
 
 	int prbs_val = 120; //default prbs signal
+	int freq = 30;
 
 	ROS_INFO("number of argc %d", argc);
 
@@ -31,7 +32,7 @@ int main(int argc, char **argv)
 	}
 	else if(argc == 3)
 	{
-		//case with prbs and saturation
+		//case with prbs and freq
 
 		prbs_val = atoi(argv[1]);
 		if(prbs_val > 500 || prbs_val < 0)
@@ -40,8 +41,35 @@ int main(int argc, char **argv)
 			return 0;
 		}
 	
-		if(atoi(argv[2]) > 2000) saturation = 2000;
-		else saturation = atoi(argv[2]);
+		if(argv[2] > 0 )
+			freq = argv[2];
+		else
+		{
+			ROS_INFO("Frequency must be more than 0");
+			return 0;
+		}
+	}
+	else if(argc == 4)
+	{
+		//case with prbs and freq saturation
+
+		prbs_val = atoi(argv[1]);
+		if(prbs_val > 500 || prbs_val < 0)
+		{
+			ROS_INFO("prbs val must be between 0 and 500");
+			return 0;
+		}
+
+		if(argv[2] > 0 )
+			freq = argv[2];
+		else
+		{
+			ROS_INFO("Frequency must be more than 0");
+			return 0;
+		}
+	
+		if(atoi(argv[3]) > 2000) saturation = 2000;
+		else saturation = atoi(argv[3]);
 	}
 	else
 	{
@@ -60,8 +88,8 @@ int main(int argc, char **argv)
 	//ros::Publisher remote_pub = n.advertise<std_msgs::Float64MultiArray>("remote_readings", 1000);
 	ros::Publisher remote_pub = n.advertise<sensor_msgs::Temperature>("remote_readings", 1000);
 	
-	//running rate = 30 Hz
-	ros::Rate loop_rate(30);
+	//running rate = freq Hz
+	ros::Rate loop_rate(freq);
 
 	/*******************************************/
 	/* Initialize the RC input, and PWM output */
