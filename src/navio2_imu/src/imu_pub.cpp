@@ -53,12 +53,12 @@ void imuSetup()
 	for(int i = 0; i<100; i++)
 	{
 		imu->update();
-    imu->read_gyroscope(&gy, &gx, &gz);
-	gz *= -1;
+    		imu->read_gyroscope(&gy, &gx, &gz);
+		gz *= -1;
 
-    gx *= 180 / PI;
-    gy *= 180 / PI;
-    gz *= 180 / PI;
+		gx *= 180 / PI;
+		gy *= 180 / PI;
+		gz *= 180 / PI;
 
 		offset[0] += (-gx*0.0175);
 		offset[1] += (-gy*0.0175);
@@ -83,10 +83,10 @@ void imuLoop()
 	previoustime = currenttime;
 	currenttime = 1000000 * tv.tv_sec + tv.tv_usec;
 	dt = (currenttime - previoustime) / 1000000.0;
-	if(dt < 1/1300.0) usleep((1/1300.0-dt)*1000000);
-        gettimeofday(&tv,NULL);
-        currenttime = 1000000 * tv.tv_sec + tv.tv_usec;
-	dt = (currenttime - previoustime) / 1000000.0;
+	//if(dt < 1/1300.0) usleep((1/1300.0-dt)*1000000);
+        //gettimeofday(&tv,NULL);
+        //currenttime = 1000000 * tv.tv_sec + tv.tv_usec;
+	//dt = (currenttime - previoustime) / 1000000.0;
 
     //-------- Read raw measurements from the MPU and update AHRS --------------
 
