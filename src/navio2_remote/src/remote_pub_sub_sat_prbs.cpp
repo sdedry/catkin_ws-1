@@ -15,11 +15,15 @@ int main(int argc, char **argv)
 	ROS_INFO("Start");
 	int saturation = 2000;
 
-	int prbs_val = 120; //default prbs signal
-	int freq = 30;
+	int prbs_val = 0; //default prbs signal
+	int freq = 100;
 
 	ROS_INFO("number of argc %d", argc);
 
+	if(argc == 1)
+	{
+		//case with default params
+	}
 	if(argc == 2)
 	{
 		//case with only prbs value
