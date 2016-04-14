@@ -53,12 +53,11 @@ void imuSetup()
 	for(int i = 0; i<100; i++)
 	{
 		imu->update();
-    		imu->read_gyroscope(&gy, &gx, &gz);
-		gz *= -1;
+    imu->read_gyroscope(&gy, &gx, &gz);
 
-		gx *= 180 / PI;
-		gy *= 180 / PI;
-		gz *= 180 / PI;
+    gx *= 180 / PI;
+    gy *= 180 / PI;
+    gz *= 180 / PI;
 
 		offset[0] += (-gx*0.0175);
 		offset[1] += (-gy*0.0175);
@@ -83,21 +82,18 @@ void imuLoop()
 	previoustime = currenttime;
 	currenttime = 1000000 * tv.tv_sec + tv.tv_usec;
 	dt = (currenttime - previoustime) / 1000000.0;
-	//if(dt < 1/1300.0) usleep((1/1300.0-dt)*1000000);
-        //gettimeofday(&tv,NULL);
-        //currenttime = 1000000 * tv.tv_sec + tv.tv_usec;
-	//dt = (currenttime - previoustime) / 1000000.0;
+	if(dt < 1/1300.0) usleep((1/1300.0-dt)*1000000);
+        gettimeofday(&tv,NULL);
+        currenttime = 1000000 * tv.tv_sec + tv.tv_usec;
+	dt = (currenttime - previoustime) / 1000000.0;
 
     //-------- Read raw measurements from the MPU and update AHRS --------------
 
     // Accel + gyro.
 	/*
     imu->update();
-    imu->read_accelerometer(&ay, &ax, &az);
-	ax *= -1;
-	ay *= -1;
-    imu->read_gyroscope(&gy, &gx, &gz);
-	gz *= -1;
+    imu->read_accelerometer(&ax, &ay, &az);
+    imu->read_gyroscope(&gx, &gy, &gz);
 
     ax /= G_SI;
     ay /= G_SI;
@@ -113,19 +109,17 @@ void imuLoop()
     
     imu->update();
     imu->read_accelerometer(&ay, &ax, &az);
-	az *= -1;
     imu->read_gyroscope(&gy, &gx, &gz);
-	gz *= -1;
-    imu->read_magnetometer(&mx, &my, &mz);
+    imu->read_magnetometer(&my, &mx, &mz);
 
-    ax /= G_SI;
-    ay /= G_SI;
+    ax /= -G_SI;
+    ay /= -G_SI;
     az /= G_SI;
     gx *= 180 / PI;
     gy *= 180 / PI;
-    gz *= 180 / PI;
+    gz *= -180 / PI;
 
-   ahrs.update(-ax, -ay, -az, gx*0.0175, gy*0.0175, gz*0.0175, mx, my, mz, dt);
+    ahrs.update(ax, ay, az, gx*0.0175, gy*0.0175, gz*0.0175, my, mx, -mz, dt);
     
 
     //------------------------ Read Euler angles ------------------------------
@@ -207,11 +201,11 @@ void update_imu_msg(sensor_msgs::Imu* imu_msg, InertialSensor* imu)
 	imu_msg->angular_velocity.y = gy;
 	imu_msg->angular_velocity.z = gz;
 
-	imu_msg->linear_acceleration.x = ax*G_SI;
-	imu_msg->linear_acceleration.y = ay*G_SI;
-	imu_msg->linear_acceleration.z = az*G_SI;
+	imu_msg->linear_acceleration.x = ax;
+	imu_msg->linear_acceleration.y = ay;
+	imu_msg->linear_acceleration.z = az;
 
-	ROS_INFO("Accelerometer : X = %+7.3f, Y = %+7.3f, Z = %+7.3f", ax*G_SI, ay*G_SI, az*G_SI);
+	ROS_INFO("Accelerometer : X = %+7.3f, Y = %+7.3f, Z = %+7.3f", ax, ay, az);
 	ROS_INFO("Gyroscope : X = %+7.3f, Y = %+7.3f, Z = %+7.3f", gx, gy, gz);
 	ROS_INFO("ROLL: %+05.2f PITCH: %+05.2f YAW: %+05.2f PERIOD %.4fs RATE %dHz \n", roll, pitch, yaw, dt, int(1/dt));
 }
@@ -236,41 +230,23 @@ void update_mf_msg(sensor_msgs::MagneticField* mf_msg, InertialSensor* imu)
 
 int main(int argc, char **argv)
 {
-	int freq = 30;
-
-	if(argc == 2)
-	{
-		if(atoi(argv[1]) > 0)
-		{
-			freq = atoi(argv[1]);
-			printf("Frequency selected : %d \n", freq);
-		}
-		else
-		{
-			printf("Frequency must be more than 0");
-			return 0;
-		}
-	}
-		
-
-
  	/***********************/
 	/* Initialize The Node */
 	/***********************/
-	ros::init(argc, argv, "imu_mpu9250_handler");
+	ros::init(argc, argv, "imu_lsm9ds1_handler");
 	ros::NodeHandle n;
 	ros::Publisher imu_pub = n.advertise<sensor_msgs::Imu>("imu_readings", 1000);
 	ros::Publisher mf_pub = n.advertise<sensor_msgs::MagneticField>("mag_readings", 1000);
 
 	//running rate = 30 Hz
-	ros::Rate loop_rate(freq);
+	ros::Rate loop_rate(30);
 
 	/*************************/
 	/* Initialize the Sensor */
 	/*************************/
 
-	printf("Selected: MPU9250\n");
-	imu = new MPU9250();
+	printf("Selected: LSM9DS1\n");
+	imu = new LSM9DS1();
 
 	/***************/
 	/* Test Sensor */

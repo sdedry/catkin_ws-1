@@ -25,13 +25,13 @@ then
   tmux select-pane -t 1
   tmux send-keys "sleep 5" C-m
   tmux send-keys "source /home/pi/catkin_ws/devel/setup.bash" C-m
-  tmux send-keys "rosrun navio2_imu imu_pub" C-m
+  tmux send-keys "rosrun navio2_imu imu_pub 100" C-m
   tmux select-pane -t 0
   tmux split-window -v
   tmux send-keys "sleep 5" C-m
   tmux send-keys "sudo -i" C-m
   tmux send-keys "source /home/pi/catkin_ws/devel/setup.bash" C-m
-  tmux send-keys "rosrun navio2_remote remote_pub_sub_sat_prbs 120 30 1600" C-m
+  tmux send-keys "rosrun navio2_remote remote_pub_sub_sat_prbs 120 100 1800" C-m
   tmux split-window -v
   tmux send-keys "sleep 10" C-m
   tmux send-keys "source /home/pi/catkin_ws/devel/setup.bash" C-m
