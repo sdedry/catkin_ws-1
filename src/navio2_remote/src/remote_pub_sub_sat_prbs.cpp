@@ -81,7 +81,7 @@ int main(int argc, char **argv)
 		return 0;
 	}
 
-	ROS_INFO("Beginning with prbs : %d and saturation  : %d", prbs_val, saturation);
+	ROS_INFO("Beginning with prbs : %d frequency %d, and saturation  : %d", prbs_val, freq, saturation);
 
 
  	/***********************/
