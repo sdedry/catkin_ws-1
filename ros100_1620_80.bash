@@ -31,7 +31,7 @@ then
   tmux send-keys "sleep 5" C-m
   tmux send-keys "sudo -i" C-m
   tmux send-keys "source /home/pi/catkin_ws/devel/setup.bash" C-m
-  tmux send-keys "rosrun navio2_remote remote_pub_sub_sat_prbs 80 100 1620" C-m
+  tmux send-keys "rosrun navio2_remote remote_pub_sub_sat_prbs 40 100 1640" C-m
   tmux split-window -v
   tmux send-keys "sleep 10" C-m
   tmux send-keys "source /home/pi/catkin_ws/devel/setup.bash" C-m

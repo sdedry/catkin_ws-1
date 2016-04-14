@@ -24,7 +24,7 @@ int main(int argc, char **argv)
 	{
 		//case with default params
 	}
-	if(argc == 2)
+	else if(argc == 2)
 	{
 		//case with only prbs value
 		prbs_val = atoi(argv[1]);
