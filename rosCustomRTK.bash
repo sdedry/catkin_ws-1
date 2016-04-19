@@ -90,7 +90,7 @@ then
     tmux send-keys "source /home/pi/catkin_ws/devel/setup.bash" C-m
     tmux send-keys "rosrun navio2_imu imu_pub $3" C-m
     #REMOTE
-    tmux select-pane -t 0
+    tmux select-pane -t 2
     tmux send-keys "sleep 5" C-m
     tmux send-keys "sudo -i" C-m
     tmux send-keys "source /home/pi/catkin_ws/devel/setup.bash" C-m
