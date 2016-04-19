@@ -69,37 +69,45 @@ then
     tmux -2 new-session -d -s $SESSION
     tmux new-window -t $SESSION:1 -n 'ROS'
     tmux split-window -h
+    tmux split-window -v
+    tmux select-pane -t 0
+    tmux split-window -v
+    tmux select-pane -t 0
+    tmux split-window -h
+    #ROSCORE
     tmux select-pane -t 0
     tmux send-keys "source /home/pi/catkin_ws/devel/setup.bash" C-m
     tmux send-keys "roscore" C-m
+    #ROSBAG
     tmux select-pane -t 1
+    tmux send-keys "sleep 10" C-m
+    tmux send-keys "source /home/pi/catkin_ws/devel/setup.bash" C-m
+    tmux send-keys "cd /home/pi/bagfiles" C-m
+    tmux send-keys "rosbag record -a" C-m
+    #IMU
+    tmux select-pane -t 3
     tmux send-keys "sleep 5" C-m
     tmux send-keys "source /home/pi/catkin_ws/devel/setup.bash" C-m
     tmux send-keys "rosrun navio2_imu imu_pub $3" C-m
+    #REMOTE
     tmux select-pane -t 0
-    tmux split-window -v
     tmux send-keys "sleep 5" C-m
     tmux send-keys "sudo -i" C-m
     tmux send-keys "source /home/pi/catkin_ws/devel/setup.bash" C-m
     tmux send-keys "rosrun navio2_remote remote_pub_sub_sat_prbs $1 $2 $3" C-m
-    tmux split-window -h
+    #GPS
+ 	tmux select-pane -t 4
     tmux send-keys "sudo ifconfig usb0 192.168.2.2" C-m
     tmux send-keys "sleep 5" C-m
     tmux send-keys "sudo -i" C-m
     tmux send-keys "source /home/pi/catkin_ws/devel/setup.bash" C-m
     tmux send-keys "rosrun gps_rtk gps_rtk" C-m
-    tmux split-window -v
-    tmux send-keys "sleep 10" C-m
-    tmux send-keys "source /home/pi/catkin_ws/devel/setup.bash" C-m
-    tmux send-keys "cd /home/pi/bagfiles" C-m
-    tmux send-keys "rosbag record -a" C-m
-
   else
-    echo "Usage : ./rosCustom.bash [prbs] [saturation] [freq] [-log]"
+    echo "Usage : ./rosCustomRTK.bash [prbs] [saturation] [freq] [-log]"
     exit 0
   fi
 else
-    echo "Usage : ./rosCustom.bash [prbs] [saturation] [freq] [-log]"
+    echo "Usage : ./rosCustomRTK.bash [prbs] [saturation] [freq] [-log]"
     exit 0
 fi
 
