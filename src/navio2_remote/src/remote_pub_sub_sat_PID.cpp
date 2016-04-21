@@ -15,7 +15,7 @@
 #define Ki 0.4867
 #define Kd 0.00127
 
-#define MAX_IERR 60
+#define MAX_IERR 1000
 
 float currentRoll;
 ros::Time currentTime;
@@ -39,7 +39,10 @@ int pid_Servo_Output(int desired_roll)
 	ROS_INFO("Time now %d", timeNow);
 	ROS_INFO("prev time %d", previousTime.nsec);
 	//time between now and last roll message we got
-	double dT = (timeNow - previousTime.nsec)/(10e9f); //in sec
+	double dTnsec = (timeNow - previousTime.nsec)///(10e9f); //in sec
+	if(dTnsec < 0) dTnsec += 10e9 // watch out cause its in ns so if it goes beyond 1 sec ...
+	double dT = dTnsec/(10e9f);
+
 	ROS_INFO("Dt = %f", dT);
 	if(dT > 0)
 		derr = (err - previousErr)/dT;
@@ -53,7 +56,7 @@ int pid_Servo_Output(int desired_roll)
 	
 	//PID CONTROLLER
 	float controlSignal = Kp*err + Ki*ierr + Kd*derr; // should be between +- 22 deg
-	int pwmSignal = (int)(((controlSignal*250.0f)/22.0f)+1500.0f);
+	int pwmSignal = (int)(((-controlSignal*250.0f)/22.0f)+1500.0f);
 	if(pwmSignal > 1750) pwmSignal = 1750;
 	if(pwmSignal < 1250) pwmSignal = 1250;
 	ROS_INFO("control signal %f", controlSignal);
@@ -184,7 +187,7 @@ int main(int argc, char **argv)
 			motor_input = rcin.read(3);
 
 		//read desired roll angle with remote ( 1250 to 1750 ) to range of -30 to 30 deg
-		desired_roll = ((float)rcin.read(2)-1500.0f)*30.0f/250.0f;
+		desired_roll = -((float)rcin.read(2)-1500.0f)*30.0f/250.0f;
 		ROS_INFO("rcin usec = %d    ---   desired roll = %f", rcin.read(2), desired_roll);
 
 		//calculate output to servo from pid controller
