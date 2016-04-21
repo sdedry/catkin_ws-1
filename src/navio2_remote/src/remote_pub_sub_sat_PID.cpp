@@ -39,8 +39,8 @@ int pid_Servo_Output(int desired_roll)
 	ROS_INFO("Time now %d", timeNow);
 	ROS_INFO("prev time %d", previousTime.nsec);
 	//time between now and last roll message we got
-	double dTnsec = (timeNow - previousTime.nsec)///(10e9f); //in sec
-	if(dTnsec < 0) dTnsec += 10e9 // watch out cause its in ns so if it goes beyond 1 sec ...
+	double dTnsec = (timeNow - previousTime.nsec);///(10e9f); //in sec
+	if(dTnsec < 0) dTnsec += 10e9; // watch out cause its in ns so if it goes beyond 1 sec ...
 	double dT = dTnsec/(10e9f);
 
 	ROS_INFO("Dt = %f", dT);
