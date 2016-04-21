@@ -44,7 +44,7 @@ then
   tmux send-keys "sleep 5" C-m
   tmux send-keys "sudo -i" C-m
   tmux send-keys "source /home/pi/catkin_ws/devel/setup.bash" C-m
-  tmux send-keys "rosrun navio2_remote remote_pub_sub_sat_prbs $1 $2" C-m
+  tmux send-keys "rosrun navio2_remote remote_pub_sub_sat_prbs $1 100 $2" C-m
 
 #3 args : prbs, saturation, frequency, default = no log
 elif [ "$#" -eq 3 ]
@@ -59,7 +59,7 @@ then
   tmux send-keys "sleep 5" C-m
   tmux send-keys "sudo -i" C-m
   tmux send-keys "source /home/pi/catkin_ws/devel/setup.bash" C-m
-  tmux send-keys "rosrun navio2_remote remote_pub_sub_sat_prbs $1 $2 $3" C-m
+  tmux send-keys "rosrun navio2_remote remote_pub_sub_sat_prbs $1 $3 $2" C-m
 
 #4 args : prbs, saturation, frequency, logging = on
 elif [ "$#" -eq 4 ]
@@ -81,7 +81,7 @@ then
     tmux send-keys "sleep 5" C-m
     tmux send-keys "sudo -i" C-m
     tmux send-keys "source /home/pi/catkin_ws/devel/setup.bash" C-m
-    tmux send-keys "rosrun navio2_remote remote_pub_sub_sat_prbs $1 $2 $3" C-m
+    tmux send-keys "rosrun navio2_remote remote_pub_sub_sat_prbs $1 $3 $2" C-m
     tmux split-window -v
     tmux send-keys "sleep 10" C-m
     tmux send-keys "source /home/pi/catkin_ws/devel/setup.bash" C-m

@@ -54,13 +54,13 @@ int pid_Servo_Output(int desired_roll)
 	return (int)controlSignal; 
 }
 
-void read_Imu(sensor_msgs::Imu& imu_msg)
+void read_Imu(sensor_msgs::Imu imu_msg)
 {
 	//save the time of the aquisition
 	previousTime = currentTime;
-	currentTime = imu_msg->header.stamp;
+	currentTime = imu_msg.header.stamp;
 	//current roll angle
-	currentRoll = imu_msg->orientation.x;
+	currentRoll = imu_msg.orientation.x;
 }
 
 int main(int argc, char **argv)
@@ -127,7 +127,7 @@ int main(int argc, char **argv)
 	/****************************/
 
 	currentRoll = 0;
-	currentTime = ros::Time::now();;
+	currentTime = ros::Time::now();
 	previousTime = ros::Time::now();
 	ierr = 0;
 	err = 0;

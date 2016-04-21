@@ -19,7 +19,7 @@ then
     tmux send-keys "sleep 5" C-m
     tmux send-keys "sudo -i" C-m
     tmux send-keys "source /home/pi/catkin_ws/devel/setup.bash" C-m
-    tmux send-keys "rosrun navio2_remote remote_pub_sub_sat_prbs" C-m
+    tmux send-keys "rosrun navio2_remote remote_pub_sub_sat_PID" C-m
 
 #1 arg : frequency, default = saturation at 2000 no log
 elif [ "$#" -eq 1 ] 
