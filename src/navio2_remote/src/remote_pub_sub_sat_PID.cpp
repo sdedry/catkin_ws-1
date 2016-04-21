@@ -205,7 +205,7 @@ int main(int argc, char **argv)
 		//remote_pub.publish(apub);
 		remote_pub.publish(rem_msg);
 		
-		ros::spin();
+		ros::spinOnce();
 
 		loop_rate.sleep();
 
