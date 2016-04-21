@@ -18,8 +18,8 @@
 #define MAX_IERR 60
 
 float currentRoll;
-time currentTime;
-time previousTime;
+ros::Time currentTime;
+ros::Time previousTime;
 
 float err;
 float derr;
