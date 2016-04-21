@@ -29,7 +29,7 @@ int pid_Servo_Output(int desired_roll)
 {
 	//calculate errors
 	float previousErr = err;
-	ROS_INFO("Error %d", err);
+	ROS_INFO("Error %f", err);
 	// ATTENTION UTILISER LE TEMPS STAMP DE ANCIEN ROLL
 	// ATTENTION AU REMPLISSAGE DU BUFFER SI A LA MEME FREQ QUE PUBLISHER
 	
@@ -37,8 +37,9 @@ int pid_Servo_Output(int desired_roll)
 	ROS_INFO("new Err %f", err);
 	long timeNow = ros::Time::now().nsec;
 	ROS_INFO("Time now %d", timeNow);
+	ROS_INFO("prev time %d", previousTime.nsec);
 	//time between now and last roll message we got
-	long dT = (timeNow - previousTime.nsec)/(10e9); //in sec
+	double dT = (timeNow - previousTime.nsec)/(10e9f); //in sec
 	ROS_INFO("Dt = %f", dT);
 	if(dT > 0)
 		derr = (err - previousErr)/dT;
@@ -65,8 +66,10 @@ void read_Imu(sensor_msgs::Imu imu_msg)
 	//save the time of the aquisition
 	previousTime = currentTime;
 	currentTime = imu_msg.header.stamp;
+	ROS_INFO("time prev %d time now %d",previousTime.nsec, currentTime.nsec );
 	//current roll angle
 	currentRoll = imu_msg.orientation.x;
+	ROS_INFO("current roll %f", currentRoll);
 }
 
 int main(int argc, char **argv)
@@ -182,7 +185,7 @@ int main(int argc, char **argv)
 
 		//read desired roll angle with remote ( 1250 to 1750 ) to range of -30 to 30 deg
 		desired_roll = ((float)rcin.read(2)-1500.0f)*30.0f/250.0f;
-		ROS_INFO("rcin usec = %d    ---   desired roll = %d", rcin.read(2), (int)desired_roll);
+		ROS_INFO("rcin usec = %d    ---   desired roll = %f", rcin.read(2), desired_roll);
 
 		//calculate output to servo from pid controller
 		servo_input = pid_Servo_Output(desired_roll);
