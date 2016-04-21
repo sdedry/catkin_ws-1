@@ -29,29 +29,35 @@ int pid_Servo_Output(int desired_roll)
 {
 	//calculate errors
 	float previousErr = err;
-
+	ROS_INFO("Error %d", err);
 	// ATTENTION UTILISER LE TEMPS STAMP DE ANCIEN ROLL
 	// ATTENTION AU REMPLISSAGE DU BUFFER SI A LA MEME FREQ QUE PUBLISHER
-
-	err = desired_roll - currentRoll;
-	long timeNow = ros::Time::now().nsec;
 	
+	err = desired_roll - currentRoll;
+	ROS_INFO("new Err %f", err);
+	long timeNow = ros::Time::now().nsec;
+	ROS_INFO("Time now %d", timeNow);
 	//time between now and last roll message we got
 	long dT = (timeNow - previousTime.nsec)/(10e9); //in sec
-
+	ROS_INFO("Dt = %f", dT);
 	if(dT > 0)
-		derr = (err - previousErr)*dT;
-
+		derr = (err - previousErr)/dT;
+	ROS_INFO("dErr = %f", derr);
 	ierr += err*dT;
+	
 	// anti wind-up
 	if(ierr > MAX_IERR) ierr = MAX_IERR;
 	if(ierr < -MAX_IERR) ierr = -MAX_IERR;
-
+	ROS_INFO("ierr = %f", ierr);
 	
 	//PID CONTROLLER
-	float controlSignal = Kp*err + Ki*ierr + Kd*derr;
-
-	return (int)controlSignal; 
+	float controlSignal = Kp*err + Ki*ierr + Kd*derr; // should be between +- 22 deg
+	int pwmSignal = (int)((controlSignal*250.0f)/22.0f)+1500.0f)
+	if(pwmSignal > 1750) pwmSignal = 1750;
+	if(pwmSignal < 1250) pwmSignal = 1250;
+	ROS_INFO("control signal %f", controlSignal);
+	ROS_INFO("pwm signal %d", pwmSignal);
+	return pwmSignal; 
 }
 
 void read_Imu(sensor_msgs::Imu imu_msg)
@@ -176,6 +182,7 @@ int main(int argc, char **argv)
 
 		//read desired roll angle with remote ( 1250 to 1750 ) to range of -30 to 30 deg
 		desired_roll = ((float)rcin.read(2)-1500.0f)*30.0f/250.0f;
+		ROS_INFO("rcin usec = %d    ---   desired roll = %d", rcin.read(2), (int)desired_roll);
 
 		//calculate output to servo from pid controller
 		servo_input = pid_Servo_Output(desired_roll);
