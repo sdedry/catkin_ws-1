@@ -52,7 +52,7 @@ int pid_Servo_Output(int desired_roll)
 	
 	//PID CONTROLLER
 	float controlSignal = Kp*err + Ki*ierr + Kd*derr; // should be between +- 22 deg
-	int pwmSignal = (int)((controlSignal*250.0f)/22.0f)+1500.0f)
+	int pwmSignal = (int)(((controlSignal*250.0f)/22.0f)+1500.0f);
 	if(pwmSignal > 1750) pwmSignal = 1750;
 	if(pwmSignal < 1250) pwmSignal = 1250;
 	ROS_INFO("control signal %f", controlSignal);
