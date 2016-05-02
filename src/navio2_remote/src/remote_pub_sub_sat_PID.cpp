@@ -11,11 +11,11 @@
 #define MOTOR_PWM_OUT 9
 #define SERVO_PWM_OUT 0
 
-#define Kp 0.2563
-#define Ki 0.4867
-#define Kd 0.00127
+#define Kp 0.6//5//0.2563
+#define Ki 1//5//0.4867
+#define Kd 0.02//0.15//0.00127
 
-#define MAX_IERR 1000
+#define MAX_IERR 10
 
 float currentRoll;
 ros::Time currentTime;
@@ -23,7 +23,7 @@ ros::Time previousTime;
 
 float err;
 float derr;
-float ierr;
+float Kierr;
 
 int pid_Servo_Output(int desired_roll)
 {
@@ -47,15 +47,25 @@ int pid_Servo_Output(int desired_roll)
 	if(dT > 0)
 		derr = (err - previousErr)/dT;
 	ROS_INFO("dErr = %f", derr);
-	ierr += err*dT;
-	
-	// anti wind-up
-	if(ierr > MAX_IERR) ierr = MAX_IERR;
-	if(ierr < -MAX_IERR) ierr = -MAX_IERR;
-	ROS_INFO("ierr = %f", ierr);
+	Kierr += Ki*err*dT;
+	ROS_INFO("KiErr = %f", Kierr);
+	//old anti wind-up (saturation)
+	if(Kierr > MAX_IERR) Kierr = MAX_IERR;
+	if(Kierr < -MAX_IERR) Kierr = -MAX_IERR;
+	//ROS_INFO("ierr = %f", ierr);
 	
 	//PID CONTROLLER
-	float controlSignal = Kp*err + Ki*ierr + Kd*derr; // should be between +- 22 deg
+	float controlSignal = Kp*err + Kierr + Kd*derr; // should be between +- 22 deg
+	//new anti windup : back calculation
+	//if(controlSignal > 22 || controlSignal < -22)
+	//{
+	//	int satDiff = controlSignal;
+	//	if(satDiff > 0) satDiff = 22 - satDiff;
+	//	else satDiff = -22 - satDiff;
+	//	ROS_INFO("satdiff = %f", satDiff);
+	//	controlSignal += satDiff;
+	//	Kierr += satDiff;
+	//}
 	int pwmSignal = (int)(((-controlSignal*250.0f)/22.0f)+1500.0f);
 	if(pwmSignal > 1750) pwmSignal = 1750;
 	if(pwmSignal < 1250) pwmSignal = 1250;
@@ -141,7 +151,7 @@ int main(int argc, char **argv)
 	currentRoll = 0;
 	currentTime = ros::Time::now();
 	previousTime = ros::Time::now();
-	ierr = 0;
+	Kierr = 0;
 	err = 0;
 	derr = 0;
 	
@@ -187,7 +197,7 @@ int main(int argc, char **argv)
 			motor_input = rcin.read(3);
 
 		//read desired roll angle with remote ( 1250 to 1750 ) to range of -30 to 30 deg
-		desired_roll = -((float)rcin.read(2)-1500.0f)*30.0f/250.0f;
+		desired_roll = -((float)rcin.read(2)-1500.0f)*40.0f/250.0f;
 		ROS_INFO("rcin usec = %d    ---   desired roll = %f", rcin.read(2), desired_roll);
 
 		//calculate output to servo from pid controller
@@ -200,10 +210,10 @@ int main(int argc, char **argv)
 		//save values into msg container a
 		rem_msg.header.stamp = ros::Time::now();
 		rem_msg.temperature = motor_input;
-		rem_msg.variance = servo_input;
+		rem_msg.variance = desired_roll;
 
 		//debug info
-		ROS_INFO("Thrust usec = %d    ---   Steering usec = %d", motor_input, servo_input);
+		ROS_INFO("Thrust usec = %d    ---   RCinput = %d", motor_input, rcin.read(2));
 
 		//remote_pub.publish(apub);
 		remote_pub.publish(rem_msg);

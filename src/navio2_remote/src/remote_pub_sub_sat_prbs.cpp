@@ -9,6 +9,7 @@
 
 #define MOTOR_PWM_OUT 9
 #define SERVO_PWM_OUT 0
+#define PRBS_FREQ 25 //frequency of the prbs signal : 8 bit => min = 25/8 max = 25/1 
 
 int main(int argc, char **argv)
 {
@@ -133,8 +134,10 @@ int main(int argc, char **argv)
 	int steer_high= 1500 + prbs_val;
 	int steer_prbs = steer_low;
 
+	int ctr = 0; //counter for the period divider 
 	while (ros::ok())
 	{
+		ctr %= freq/PRBS_FREQ;
 
 		//Throttle saturation
 		if(rcin.read(3) >= saturation)
@@ -144,16 +147,19 @@ int main(int argc, char **argv)
 
 		//servo control with prbs
 		servo_input = rcin.read(2);
-		int bit = ((lfsr >> 0) ^ (lfsr >> 2)) & 1;
-		lfsr = (lfsr >> 1) | (bit << 10);
+		if(!ctr)
+		{
+			int bit = ((lfsr >> 0) ^ (lfsr >> 2)) & 1;
+			lfsr = (lfsr >> 1) | (bit << 8); //was bit << 10 before
 
-		if (bit == 1)
-			steer_prbs = steer_high;
-		else if (bit == 0)
-			steer_prbs = steer_low;
-		else
-			steer_prbs = servo_input;
-
+			if (bit == 1)
+				steer_prbs = steer_high;
+			else if (bit == 0)
+				steer_prbs = steer_low;
+			else
+				steer_prbs = servo_input;
+		}
+		ctr++;
 		if (servo_input > steer_high || servo_input < steer_low)
 			servo_input = servo_input;
 		else
