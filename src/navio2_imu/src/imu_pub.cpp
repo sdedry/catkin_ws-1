@@ -14,6 +14,7 @@
 #define G_SI 9.80665
 #define PI   3.14159
 
+#define clear() printf("\033[H\033[J")
 // Objects
 
 InertialSensor *imu;
@@ -53,8 +54,8 @@ void imuSetup()
 	for(int i = 0; i<100; i++)
 	{
 		imu->update();
-    		imu->read_gyroscope(&gy, &gx, &gz);
-		gz *= -1;
+    		imu->read_gyroscope(&gx, &gy, &gz);//&gy, &gx, &gz);
+		//gz *= -1;
 
 		gx *= 180 / PI;
 		gy *= 180 / PI;
@@ -91,11 +92,10 @@ void imuLoop()
     //-------- Read raw measurements from the MPU and update AHRS --------------
 
     // Accel + gyro.
-	/*
+	
     imu->update();
     imu->read_accelerometer(&ay, &ax, &az);
-	ax *= -1;
-	ay *= -1;
+	az *= -1;
     imu->read_gyroscope(&gy, &gx, &gz);
 	gz *= -1;
 
@@ -106,11 +106,11 @@ void imuLoop()
     gy *= 180 / PI;
     gz *= 180 / PI;
 
-    ahrs.updateIMU(ax, ay, az, gx*0.0175, gy*0.0175, gz*0.0175, dt);
-    	*/
+    ahrs.updateIMU(-ax, -ay, -az, gx*0.0175, gy*0.0175, gz*0.0175, dt);
+    	
     // Accel + gyro + mag.
     // Soft and hard iron calibration required for proper function.
-    
+    /*
     imu->update();
     imu->read_accelerometer(&ay, &ax, &az);
 	az *= -1;
@@ -126,7 +126,7 @@ void imuLoop()
     gz *= 180 / PI;
 
    ahrs.update(-ax, -ay, -az, gx*0.0175, gy*0.0175, gz*0.0175, mx, my, mz, dt);
-    
+    */
 
     //------------------------ Read Euler angles ------------------------------
 
@@ -285,14 +285,15 @@ int main(int argc, char **argv)
 
 	while (ros::ok())
 	{
-		imuLoop();		
-		
+		clear(); // clear defined on top
+		imuLoop();
+
 		sensor_msgs::Imu imu_msg;
 		sensor_msgs::MagneticField mf_msg;
 
 		init_imu_msg(&imu_msg);
 		init_mf_msg(&mf_msg);
-		
+
 		update_imu_msg(&imu_msg, imu);
 		update_mf_msg(&mf_msg, imu);
 
