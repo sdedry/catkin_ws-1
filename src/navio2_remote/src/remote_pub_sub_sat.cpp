@@ -80,6 +80,9 @@ int main(int argc, char **argv)
 	*/
 	sensor_msgs::Temperature rem_msg;
 
+	int rpm_pwm = 0;
+	float rpm = 0;
+
 	while (ros::ok())
 	{
 
@@ -106,6 +109,11 @@ int main(int argc, char **argv)
 
 		//debug info
 		ROS_INFO("Thrust usec = %d    ---   Steering usec = %d", motor_input, servo_input);
+
+		//rpm info
+		rpm_pwm = rcin.read(8);
+		rpm = (rpm_pwm-1000)*3000/1000;
+		ROS_INFO("rpm pwm %d, rpm = %f", rpm_pwm, rpm);
 
 		//remote_pub.publish(apub);
 		remote_pub.publish(rem_msg);
