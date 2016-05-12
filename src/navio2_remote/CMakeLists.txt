@@ -141,6 +141,13 @@ target_link_libraries(remote_pub_sub_sat_prbs rcinput)
 target_link_libraries(remote_pub_sub_sat_prbs pwm)
 target_link_libraries(remote_pub_sub_sat_prbs util)
 
+#same as first one but with speed readings
+add_executable(remote_pub_sub_sat_prbs2 src/remote_pub_sub_sat_prbs2.cpp)
+target_link_libraries(remote_pub_sub_sat_prbs2 ${catkin_LIBRARIES})
+target_link_libraries(remote_pub_sub_sat_prbs2 rcinput)
+target_link_libraries(remote_pub_sub_sat_prbs2 pwm)
+target_link_libraries(remote_pub_sub_sat_prbs2 util)
+
 add_executable(remote_pub_sub_sat_PID src/remote_pub_sub_sat_PID.cpp)
 target_link_libraries(remote_pub_sub_sat_PID ${catkin_LIBRARIES})
 target_link_libraries(remote_pub_sub_sat_PID rcinput)
