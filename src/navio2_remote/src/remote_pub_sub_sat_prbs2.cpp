@@ -1,3 +1,4 @@
+
 // New Version 12/05/2016 with transmission of the Speed into a new topic
 
 #include "RCInput.h"
@@ -185,8 +186,10 @@ int main(int argc, char **argv)
 		rem_msg.temperature = motor_input;
 		rem_msg.variance = servo_input;
 
-		dtf = rcin.read(8);
-		speed = 8.0f*PI*R*1000.0f/((float)dtf);
+		dtf = rcin.read(4)-1000;
+		if(dtf<=0) speed = 0;//condition for arduino startup
+		else
+			speed = 8.0f*PI*R*1000.0f/((float)dtf);
 
 		//save values into msg container for the control readings
 		rem_msg.header.stamp = ros::Time::now();
@@ -194,13 +197,15 @@ int main(int argc, char **argv)
 		rem_msg.variance = 0;//here it's supposed to be the control output
 
 		//debug info
-		ROS_INFO("Thrust usec = %d    ---   Steering usec = %d", motor_input, servo_input);
-		ROS_INFO("dtf msec = %d    ---   Speed m/s = %f", dtf, speed);
+		//ROS_INFO("Thrust usec = %d    ---   Steering usec = %d", motor_input, servo_input);
+		//ROS_INFO("dtf msec = %d    ---   Speed m/s = %f", dtf, speed);
+		printf("[Thrust:%d] - [Steering:%d] - [dtf:%4d] - [Speed:%2.2f] %d\n", motor_input, servo_input, dtf, speed, rcin.read(2));
+		//printf("rcin %d  %d  %d  %d  %d  %d  %d  %d\n",rcin.read(0), rcin.read(1), rcin.read(2), rcin.read(3), rcin.read(4), rcin.read(5), rcin.read(6), rcin.read(7));
 
 		// publish the messages
 		remote_pub.publish(rem_msg);
 		remote_pub.publish(ctrl_msg);
-		
+
 		ros::spinOnce();
 
 		loop_rate.sleep();

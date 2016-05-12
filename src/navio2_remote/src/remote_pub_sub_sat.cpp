@@ -81,7 +81,7 @@ int main(int argc, char **argv)
 	sensor_msgs::Temperature rem_msg;
 
 	int rpm_pwm = 0;
-	float rpm = 0;
+	int rpm = 0;
 
 	while (ros::ok())
 	{
@@ -112,8 +112,12 @@ int main(int argc, char **argv)
 
 		//rpm info
 		rpm_pwm = rcin.read(8);
-		rpm = (rpm_pwm-1000)*3000/1000;
-		ROS_INFO("rpm pwm %d, rpm = %f", rpm_pwm, rpm);
+		rpm = (rpm_pwm-1000)*3;
+		//ROS_INFO("rpm pwm %d , rpm = %d", rcin.read(8), (rcin.read(8)-1000)*3);
+		ROS_INFO("%d %d %d %d %d %d", rcin.read(1), rcin.read(4),
+			 rcin.read(5), rcin.read(6), rcin.read(7), rcin.read(8));
+
+	
 
 		//remote_pub.publish(apub);
 		remote_pub.publish(rem_msg);

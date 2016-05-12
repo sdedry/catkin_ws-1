@@ -14,7 +14,7 @@
 #define G_SI 9.80665
 #define PI   3.14159
 
-#define clear() printf("\033[H\033[J")
+//#define clear() printf("\033[H\033[J")
 // Objects
 
 InertialSensor *imu;
@@ -211,9 +211,12 @@ void update_imu_msg(sensor_msgs::Imu* imu_msg, InertialSensor* imu)
 	imu_msg->linear_acceleration.y = ay*G_SI;
 	imu_msg->linear_acceleration.z = az*G_SI;
 
-	ROS_INFO("Accelerometer : X = %+7.3f, Y = %+7.3f, Z = %+7.3f", ax*G_SI, ay*G_SI, az*G_SI);
-	ROS_INFO("Gyroscope : X = %+7.3f, Y = %+7.3f, Z = %+7.3f", gx, gy, gz);
-	ROS_INFO("ROLL: %+05.2f PITCH: %+05.2f YAW: %+05.2f PERIOD %.4fs RATE %dHz \n", roll, pitch, yaw, dt, int(1/dt));
+	printf(" Accelerometer: [X:%7.3f]  [Y:%7.3f]  [Z:%7.3f] \n Gyroscope: [X:%7.3f]  [Y:%7.3f]  [Z:%7.3f] \n Attitude: [Roll:%+05.2f]  [Pitch:%+05.2f]  [Yaw:%+05.2f] \n [Period:%.4fs]  [Rate:%dHz] \n \n",
+		ax*G_SI, ay*G_SI, az*G_SI, gx, gy, gz, roll, pitch, yaw, dt, int(1/dt));
+
+	//ROS_INFO("Accelerometer : X = %+7.3f, Y = %+7.3f, Z = %+7.3f", ax*G_SI, ay*G_SI, az*G_SI);
+	//ROS_INFO("Gyroscope : X = %+7.3f, Y = %+7.3f, Z = %+7.3f", gx, gy, gz);
+	//ROS_INFO("ROLL: %+05.2f PITCH: %+05.2f YAW: %+05.2f PERIOD %.4fs RATE %dHz \n", roll, pitch, yaw, dt, int(1/dt));
 }
 
 void update_mf_msg(sensor_msgs::MagneticField* mf_msg, InertialSensor* imu)
@@ -231,7 +234,7 @@ void update_mf_msg(sensor_msgs::MagneticField* mf_msg, InertialSensor* imu)
 	mf_msg->magnetic_field.y = my;
 	mf_msg->magnetic_field.z = mz;
 
-	ROS_INFO("Magnetic Field : X = %+7.3f, Y = %+7.3f, Z = %+7.3f", mx, my, mz);
+	//ROS_INFO("Magnetic Field : X = %+7.3f, Y = %+7.3f, Z = %+7.3f", mx, my, mz);
 }
 
 int main(int argc, char **argv)
@@ -285,7 +288,7 @@ int main(int argc, char **argv)
 
 	while (ros::ok())
 	{
-		clear(); // clear defined on top
+		//clear(); // clear defined on top
 		imuLoop();
 
 		sensor_msgs::Imu imu_msg;
