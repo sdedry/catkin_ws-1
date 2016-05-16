@@ -201,15 +201,10 @@ int main(int argc, char **argv)
 		speed_filt = alpha*speed + (1-alpha)*speed_filt;
 
 		//save values into msg container for the control readings
-<<<<<<< HEAD
-		ctrl_msg.header.stamp = ros::Time::now();
-		ctrl_msg.temperature = speed;
-		ctrl_msg.variance = 0;//here it's supposed to be the control output
-=======
+
 		rem_msg.header.stamp = ros::Time::now();
 		rem_msg.temperature = speed_filt;
 		rem_msg.variance = 0;//here it's supposed to be the control output
->>>>>>> d89f6fbe795b8ee4b41eeb1058e53573a1e67a0c
 
 		//debug info
 		//ROS_INFO("Thrust usec = %d    ---   Steering usec = %d", motor_input, servo_input);
