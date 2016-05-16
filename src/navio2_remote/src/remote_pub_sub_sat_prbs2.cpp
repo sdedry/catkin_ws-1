@@ -143,6 +143,7 @@ int main(int argc, char **argv)
 
 	//speed in m/s
 	float speed = 0;
+	float speed_filt = 0;
 	int dtf = 0;// dtf read from arduino. dtf = dt*4 in msec
 	float R = 0.0625f; //Rear Wheel Radius
 
@@ -186,14 +187,23 @@ int main(int argc, char **argv)
 		rem_msg.temperature = motor_input;
 		rem_msg.variance = servo_input;
 
+
+
+
+
 		dtf = rcin.read(4)-1000;
 		if(dtf<=0) speed = 0;//condition for arduino startup
 		else
 			speed = 8.0f*PI*R*1000.0f/((float)dtf);
 
+		
+		// low pass filtering of the speed with tau = 0.1
+		float alpha = 0.01f/(0.01f+0.1f);
+		speed_filt = alpha*speed + (1-alpha)*speed_filt;
+
 		//save values into msg container for the control readings
 		rem_msg.header.stamp = ros::Time::now();
-		rem_msg.temperature = speed;
+		rem_msg.temperature = speed_filt;
 		rem_msg.variance = 0;//here it's supposed to be the control output
 
 		//debug info
