@@ -39,7 +39,7 @@ int pid_Servo_Output(int desired_roll)
 	
 	err = desired_roll - currentRoll;
 	ROS_INFO("new Err %f", err);
-	long timeNow = ros::Time::now().nsec;
+	long timeNow = currentTime.nsec;//ros::Time::now().nsec;
 	ROS_INFO("Time now %d", timeNow);
 	ROS_INFO("prev time %d", previousTime.nsec);
 	//time between now and last roll message we got
