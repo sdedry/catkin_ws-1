@@ -20,6 +20,7 @@ ros::Time previousTime;
 
 float err;
 float derr;
+float derr_filt;
 float Kierr;
 
 //parameters to pass
@@ -48,6 +49,13 @@ int pid_Servo_Output(int desired_roll)
 	if(dT > 0)
 		derr = (err - previousErr)/dT;
 	ROS_INFO("dErr = %f", derr);
+
+	//filtering of derivative
+	float tau = 0.025f; //matlab
+	float alpha = 0.01f/(0.01f+tau);
+	derr_filt = alpha*derr + (1.0f-alpha)*derr_filt;
+	ROS_INFO("dErr_filt = %f", derr_filt);
+
 	Kierr += Ki*err*dT;
 	ROS_INFO("KiErr = %f", Kierr);
 	//old anti wind-up (saturation)
@@ -56,7 +64,7 @@ int pid_Servo_Output(int desired_roll)
 	//ROS_INFO("ierr = %f", ierr);
 	
 	//PID CONTROLLER
-	float controlSignal = Kp*err + Kierr + Kd*derr; // should be between +- 22 deg
+	float controlSignal = Kp*err + Kierr + Kd*derr_filt; // should be between +- 22 deg
 	
 	int pwmSignal = (int)(((-controlSignal*250.0f)/22.0f)+((float)servo_trim));
 	if(pwmSignal > 1750) pwmSignal = 1750;
@@ -190,6 +198,7 @@ int main(int argc, char **argv)
 	Kierr = 0;
 	err = 0;
 	derr = 0;
+	derr_filt = 0;
 	
 	/*******************************************/
 	/* Initialize the RC input, and PWM output */
