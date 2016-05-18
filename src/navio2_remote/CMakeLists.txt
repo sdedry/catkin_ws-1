@@ -160,6 +160,12 @@ target_link_libraries(remote_pub_sub_sat_PID2 rcinput)
 target_link_libraries(remote_pub_sub_sat_PID2 pwm)
 target_link_libraries(remote_pub_sub_sat_PID2 util)
 
+add_executable(remote_pub_sub_sat_PID_trim src/remote_pub_sub_sat_PID_trim.cpp)
+target_link_libraries(remote_pub_sub_sat_PID_trim ${catkin_LIBRARIES})
+target_link_libraries(remote_pub_sub_sat_PID_trim rcinput)
+target_link_libraries(remote_pub_sub_sat_PID_trim pwm)
+target_link_libraries(remote_pub_sub_sat_PID_trim util)
+
 ## Declare a C++ library
 # add_library(navio2_remote
 #   src/${PROJECT_NAME}/navio2_remote.cpp
