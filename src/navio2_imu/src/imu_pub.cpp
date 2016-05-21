@@ -54,8 +54,7 @@ void imuSetup()
 	for(int i = 0; i<100; i++)
 	{
 		imu->update();
-    		imu->read_gyroscope(&gx, &gy, &gz);//&gy, &gx, &gz);
-		//gz *= -1;
+    		imu->read_gyroscope(&gx, &gy, &gz);
 
 		gx *= 180 / PI;
 		gy *= 180 / PI;
@@ -94,10 +93,8 @@ void imuLoop()
     // Accel + gyro.
 	
     imu->update();
-    imu->read_accelerometer(&ay, &ax, &az);
-	az *= -1;
-    imu->read_gyroscope(&gy, &gx, &gz);
-	gz *= -1;
+    imu->read_accelerometer(&ax, &ay, &az);
+    imu->read_gyroscope(&gx, &gy, &gz);
 
     ax /= G_SI;
     ay /= G_SI;
@@ -106,7 +103,7 @@ void imuLoop()
     gy *= 180 / PI;
     gz *= 180 / PI;
 
-    ahrs.updateIMU(-ax, -ay, -az, gx*0.0175, gy*0.0175, gz*0.0175, dt);
+    ahrs.updateIMU(ax, ay, az, gx*0.0175, gy*0.0175, gz*0.0175, dt);
     	
     // Accel + gyro + mag.
     // Soft and hard iron calibration required for proper function.
@@ -131,7 +128,7 @@ void imuLoop()
     //------------------------ Read Euler angles ------------------------------
 
     //ahrs.getEuler(&pitch, &roll, &yaw);//roll and pitch inverted 
-    ahrs.getEuler(&roll, &pitch, &yaw);
+    ahrs.getEuler(&pitch, &roll, &yaw);
 
     //------------------- Discard the time of the first cycle -----------------
 
@@ -211,12 +208,8 @@ void update_imu_msg(sensor_msgs::Imu* imu_msg, InertialSensor* imu)
 	imu_msg->linear_acceleration.y = ay*G_SI;
 	imu_msg->linear_acceleration.z = az*G_SI;
 
-	printf(" Accelerometer: [X:%7.3f]  [Y:%7.3f]  [Z:%7.3f] \n Gyroscope: [X:%7.3f]  [Y:%7.3f]  [Z:%7.3f] \n Attitude: [Roll:%+05.2f]  [Pitch:%+05.2f]  [Yaw:%+05.2f] \n [Period:%.4fs]  [Rate:%dHz] \n \n",
-		ax*G_SI, ay*G_SI, az*G_SI, gx, gy, gz, roll, pitch, yaw, dt, int(1/dt));
+	printf("Attitude: [Roll:%+05.2f]  [Pitch:%+05.2f]  [Yaw:%+05.2f] \n [Period:%.4fs]  [Rate:%dHz] \n \n", roll, pitch, yaw, dt, int(1/dt));
 
-	//ROS_INFO("Accelerometer : X = %+7.3f, Y = %+7.3f, Z = %+7.3f", ax*G_SI, ay*G_SI, az*G_SI);
-	//ROS_INFO("Gyroscope : X = %+7.3f, Y = %+7.3f, Z = %+7.3f", gx, gy, gz);
-	//ROS_INFO("ROLL: %+05.2f PITCH: %+05.2f YAW: %+05.2f PERIOD %.4fs RATE %dHz \n", roll, pitch, yaw, dt, int(1/dt));
 }
 
 void update_mf_msg(sensor_msgs::MagneticField* mf_msg, InertialSensor* imu)
