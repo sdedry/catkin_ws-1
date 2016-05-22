@@ -188,8 +188,8 @@ int main(int argc, char **argv)
 		rem_msg.variance = servo_input;
 
 		dtf = rcin.read(4)-1000;
-		speed = 8.0f*PI*R*1000.0f/((float)dtf);
-		if(speed < 0 || speed > 20) speed = 0;
+		speed = 4.0f*PI*R*1000.0f/((float)dtf);
+		if(speed < 0 || dtf < 40) speed = 0;
 
 		
 		// low pass filtering of the speed with tau = 0.1
@@ -199,13 +199,13 @@ int main(int argc, char **argv)
 		//save values into msg container for the control readings
 
 		ctrl_msg.header.stamp = ros::Time::now();
-		ctrl_msg.temperature = speed_filt;
+		ctrl_msg.temperature = speed;//_filt;
 		ctrl_msg.variance = 0;//here it's supposed to be the control output
 
 		//debug info
 		//ROS_INFO("Thrust usec = %d    ---   Steering usec = %d", motor_input, servo_input);
 		//ROS_INFO("dtf msec = %d    ---   Speed m/s = %f", dtf, speed);
-		printf("[Thrust:%d] - [Steering:%d] - [dtf:%4d] - [Speed:%2.2f] %d\n", motor_input, servo_input, dtf, speed, rcin.read(2));
+		printf("[Thrust:%d] - [Steering:%d] - [dtf:%4d] - [Speed:%2.2f]\n", motor_input, servo_input, dtf, speed_filt);
 		//printf("rcin %d  %d  %d  %d  %d  %d  %d  %d\n",rcin.read(0), rcin.read(1), rcin.read(2), rcin.read(3), rcin.read(4), rcin.read(5), rcin.read(6), rcin.read(7));
 
 		// publish the messages
