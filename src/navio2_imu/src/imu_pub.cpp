@@ -40,6 +40,8 @@ unsigned long previoustime, currenttime;
 float dtsumm = 0;
 int isFirst = 1;
 
+int freq = 100;
+
 //============================= Initial setup =================================
 
 void imuSetup()
@@ -77,67 +79,78 @@ void imuSetup()
 
 void imuLoop()
 {
-    //----------------------- Calculate delta time ----------------------------
 
-	gettimeofday(&tv,NULL);
-	previoustime = currenttime;
-	currenttime = 1000000 * tv.tv_sec + tv.tv_usec;
-	dt = (currenttime - previoustime) / 1000000.0;
-	//if(dt < 1/1300.0) usleep((1/1300.0-dt)*1000000);
-        //gettimeofday(&tv,NULL);
-        //currenttime = 1000000 * tv.tv_sec + tv.tv_usec;
-	//dt = (currenttime - previoustime) / 1000000.0;
+    float dtsum = 0.0f; //sum of delta t's
 
-    //-------- Read raw measurements from the MPU and update AHRS --------------
-
-    // Accel + gyro.
-	
-    imu->update();
-    imu->read_accelerometer(&ax, &ay, &az);
-    imu->read_gyroscope(&gx, &gy, &gz);
-
-    ax /= G_SI;
-    ay /= G_SI;
-    az /= G_SI;
-    gx *= 180 / PI;
-    gy *= 180 / PI;
-    gz *= 180 / PI;
-
-    ahrs.updateIMU(ax, ay, az, gx*0.0175, gy*0.0175, gz*0.0175, dt);
-    	
-    // Accel + gyro + mag.
-    // Soft and hard iron calibration required for proper function.
-    /*
-    imu->update();
-    imu->read_accelerometer(&ay, &ax, &az);
-	az *= -1;
-    imu->read_gyroscope(&gy, &gx, &gz);
-	gz *= -1;
-    imu->read_magnetometer(&mx, &my, &mz);
-
-    ax /= G_SI;
-    ay /= G_SI;
-    az /= G_SI;
-    gx *= 180 / PI;
-    gy *= 180 / PI;
-    gz *= 180 / PI;
-
-   ahrs.update(-ax, -ay, -az, gx*0.0175, gy*0.0175, gz*0.0175, mx, my, mz, dt);
-    */
-
-    //------------------------ Read Euler angles ------------------------------
-
-    //ahrs.getEuler(&pitch, &roll, &yaw);//roll and pitch inverted 
-    ahrs.getEuler(&pitch, &roll, &yaw);
-
-    //------------------- Discard the time of the first cycle -----------------
-
-    if (!isFirst)
+    while(dtsum < 1.0f/freq) //run this loop at 1300 Hz
     {
-    	if (dt > maxdt) maxdt = dt;
-    	if (dt < mindt) mindt = dt;
+		//----------------------- Calculate delta time ----------------------------
+
+		gettimeofday(&tv,NULL);
+		previoustime = currenttime;
+		currenttime = 1000000 * tv.tv_sec + tv.tv_usec;
+		dt = (currenttime - previoustime) / 1000000.0;
+		if(dt < 1/1300.0) usleep((1/1300.0-dt)*1000000);
+		gettimeofday(&tv,NULL);
+		currenttime = 1000000 * tv.tv_sec + tv.tv_usec;
+		dt = (currenttime - previoustime) / 1000000.0;
+
+	    //-------- Read raw measurements from the MPU and update AHRS --------------
+
+	    // Accel + gyro.
+	
+	    imu->update();
+	    imu->read_accelerometer(&ax, &ay, &az);
+	    imu->read_gyroscope(&gx, &gy, &gz);
+
+	    ax /= G_SI;
+	    ay /= G_SI;
+	    az /= G_SI;
+	    gx *= 180 / PI;
+	    gy *= 180 / PI;
+	    gz *= 180 / PI;
+
+	    ahrs.updateIMU(ax, ay, az, gx*0.0175, gy*0.0175, gz*0.0175, dt);
+	    	
+	    // Accel + gyro + mag.
+	    // Soft and hard iron calibration required for proper function.
+	    /*
+	    imu->update();
+	    imu->read_accelerometer(&ay, &ax, &az);
+		az *= -1;
+	    imu->read_gyroscope(&gy, &gx, &gz);
+		gz *= -1;
+	    imu->read_magnetometer(&mx, &my, &mz);
+
+	    ax /= G_SI;
+	    ay /= G_SI;
+	    az /= G_SI;
+	    gx *= 180 / PI;
+	    gy *= 180 / PI;
+	    gz *= 180 / PI;
+
+	   ahrs.update(-ax, -ay, -az, gx*0.0175, gy*0.0175, gz*0.0175, mx, my, mz, dt);
+	    */
+
+	    //------------------------ Read Euler angles ------------------------------
+
+	    //ahrs.getEuler(&pitch, &roll, &yaw);//roll and pitch inverted 
+	    ahrs.getEuler(&pitch, &roll, &yaw);
+
+	    //------------------- Discard the time of the first cycle -----------------
+
+	    if (!isFirst)
+	    {
+	    	if (dt > maxdt) maxdt = dt;
+	    	if (dt < mindt) mindt = dt;
+	    }
+	    isFirst = 0;
+	
+	dtsum += dt;
     }
-    isFirst = 0;
+
+
+    
 }
 
 void init_imu_msg(sensor_msgs::Imu* imu_msg)
@@ -232,7 +245,7 @@ void update_mf_msg(sensor_msgs::MagneticField* mf_msg, InertialSensor* imu)
 
 int main(int argc, char **argv)
 {
-	int freq = 30;
+	//int freq = 30;
 
 	if(argc == 2)
 	{
