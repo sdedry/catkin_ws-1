@@ -13,6 +13,7 @@
 
 //Maximum Integration angle
 #define MAX_IERR 4
+#define PI 3.14159
 
 float currentRoll;
 ros::Time currentTime;
