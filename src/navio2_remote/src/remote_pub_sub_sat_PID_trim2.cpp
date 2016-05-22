@@ -181,7 +181,8 @@ int main(int argc, char **argv)
 	ros::init(argc, argv, "remote_reading_handler");
 	ros::NodeHandle n;
 	ros::Publisher remote_pub = n.advertise<sensor_msgs::Temperature>("remote_readings", 1000);
-
+	ros::Publisher control_pub = n.advertise<sensor_msgs::Temperature>("control_readings", 1000);
+	
 	//subscribe to imu topic
 	ros::Subscriber imu_sub = n.subscribe("imu_readings", 1000, read_Imu);
 
@@ -229,8 +230,15 @@ int main(int argc, char **argv)
 	int servo_input = 0;
 
 	sensor_msgs::Temperature rem_msg;
+	sensor_msgs::Temperature ctrl_msg;
 
 	float desired_roll = 0;
+
+	//speed in m/s
+	float speed = 0;
+	float speed_filt = 0;
+	int dtf = 0;// dtf read from arduino. dtf = dt*4 in msec
+	float R = 0.0625f; //Rear Wheel Radius
 
 	while (ros::ok())
 	{
@@ -255,13 +263,31 @@ int main(int argc, char **argv)
 		//save values into msg container a
 		rem_msg.header.stamp = ros::Time::now();
 		rem_msg.temperature = motor_input;
-		rem_msg.variance = desired_roll;
+		rem_msg.variance = servo_input;
+
+
+		dtf = rcin.read(4)-1000;
+		speed = 4.0f*PI*R*1000.0f/((float)dtf);
+		if(speed < 0 || dtf < 40) speed = 0;
+
+		
+		// low pass filtering of the speed with tau = 0.1
+		float alpha = 0.01f/(0.01f+0.1f);
+		speed_filt = alpha*speed + (1.0f-alpha)*speed_filt;
+
+		//save values into msg container for the control readings
+
+		ctrl_msg.header.stamp = ros::Time::now();
+		ctrl_msg.temperature = speed;//_filt;
+		ctrl_msg.variance = desired_roll;//here it's supposed to be the desired roll
+
 
 		//debug info
-		ROS_INFO("Thrust usec = %d    ---   RCinput = %d", motor_input, rcin.read(2));
+		printf("[Thrust:%d] - [Steering:%d] - [dtf:%4d] - [Speed:%2.2f]\n", motor_input, servo_input, dtf, speed_filt);
 
 		//remote_pub.publish(apub);
 		remote_pub.publish(rem_msg);
+		control_pub.publish(ctrl_msg);
 
 		ros::spinOnce();
 

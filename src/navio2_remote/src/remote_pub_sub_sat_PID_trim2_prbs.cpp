@@ -13,6 +13,8 @@
 
 //Maximum Integration angle
 #define MAX_IERR 4
+#define PRBS_FREQ 25
+#define PI 3.14159
 
 float currentRoll;
 ros::Time currentTime;
@@ -94,6 +96,7 @@ int main(int argc, char **argv)
 	Ki = 2;
 	Kd = 0.01;
 	servo_trim = 1500;
+	int prbs_val = 0;
 
 	ROS_INFO("number of argc %d", argc);
 
@@ -166,6 +169,35 @@ int main(int argc, char **argv)
 		servo_trim = atoi(argv[6]);
 		
 	}
+	else if(argc == 8)
+	{
+		//case with frequency and saturation
+		if(atoi(argv[1]) > 0 )
+			freq = atoi(argv[1]);
+		else
+		{
+			ROS_INFO("Frequency must be more than 0");
+			return 0;
+		}
+	
+		if(atoi(argv[2]) > 2000) saturation = 2000;
+		else saturation = atoi(argv[2]);
+
+		Kp = atof(argv[3]);
+		Ki = atof(argv[4]);
+		Kd = atof(argv[5]);
+
+		servo_trim = atoi(argv[6]);
+
+		prbs_val = atoi(argv[7]);
+		if(prbs_val > 30 || prbs_val < 0)
+		{
+			ROS_INFO("prbs val must be between 0 and 500");
+			return 0;
+		}
+
+		
+	}
 	else
 	{
 		ROS_INFO("not enough arguments ! Specify prbs value and throttle saturation.");
@@ -181,7 +213,8 @@ int main(int argc, char **argv)
 	ros::init(argc, argv, "remote_reading_handler");
 	ros::NodeHandle n;
 	ros::Publisher remote_pub = n.advertise<sensor_msgs::Temperature>("remote_readings", 1000);
-
+	ros::Publisher control_pub = n.advertise<sensor_msgs::Temperature>("control_readings", 1000);
+	
 	//subscribe to imu topic
 	ros::Subscriber imu_sub = n.subscribe("imu_readings", 1000, read_Imu);
 
@@ -229,11 +262,31 @@ int main(int argc, char **argv)
 	int servo_input = 0;
 
 	sensor_msgs::Temperature rem_msg;
+	sensor_msgs::Temperature ctrl_msg;
 
 	float desired_roll = 0;
 
+	//prbs start state
+	int start_state = 0x7D0;
+	int lfsr = start_state;
+
+	int roll_low =  - prbs_val;
+	int roll_high=  + prbs_val;
+	int roll_prbs = roll_low;
+
+	int ctr = 0; //counter for the period divider 
+
+	//speed in m/s
+	float speed = 0;
+	float speed_filt = 0;
+	int dtf = 0;// dtf read from arduino. dtf = dt*4 in msec
+	float R = 0.0625f; //Rear Wheel Radius
+
 	while (ros::ok())
 	{
+		
+		ctr %= freq/PRBS_FREQ;
+
 
 		//Throttle saturation
 		if(rcin.read(3) >= saturation)
@@ -245,6 +298,25 @@ int main(int argc, char **argv)
 		desired_roll = -((float)rcin.read(2)-1500.0f)*30.0f/250.0f;
 		ROS_INFO("rcin usec = %d    ---   desired roll = %f", rcin.read(2), desired_roll);
 
+		//roll PRBS
+		if(!ctr)
+		{
+			int bit = ((lfsr >> 0) ^ (lfsr >> 2)) & 1;
+			lfsr = (lfsr >> 1) | (bit << 8); //was bit << 10 before
+
+			if (bit == 1)
+				roll_prbs = roll_high;
+			else if (bit == 0)
+				roll_prbs = roll_low;
+			else
+				roll_prbs = desired_roll;
+		}
+		ctr++;
+		if (desired_roll > roll_high || desired_roll < roll_low)
+			desired_roll = desired_roll;
+		else
+			desired_roll = roll_prbs;
+
 		//calculate output to servo from pid controller
 		servo_input = pid_Servo_Output(desired_roll);
 		
@@ -255,13 +327,31 @@ int main(int argc, char **argv)
 		//save values into msg container a
 		rem_msg.header.stamp = ros::Time::now();
 		rem_msg.temperature = motor_input;
-		rem_msg.variance = desired_roll;
+		rem_msg.variance = servo_input;
+
+
+		dtf = rcin.read(4)-1000;
+		speed = 4.0f*PI*R*1000.0f/((float)dtf);
+		if(speed < 0 || dtf < 40) speed = 0;
+
+		
+		// low pass filtering of the speed with tau = 0.1
+		float alpha = 0.01f/(0.01f+0.1f);
+		speed_filt = alpha*speed + (1.0f-alpha)*speed_filt;
+
+		//save values into msg container for the control readings
+
+		ctrl_msg.header.stamp = ros::Time::now();
+		ctrl_msg.temperature = speed;//_filt;
+		ctrl_msg.variance = desired_roll;//here it's supposed to be the desired roll
+
 
 		//debug info
-		ROS_INFO("Thrust usec = %d    ---   RCinput = %d", motor_input, rcin.read(2));
+		printf("[Thrust:%d] - [Steering:%d] - [dtf:%4d] - [Speed:%2.2f]\n", motor_input, servo_input, dtf, speed_filt);
 
 		//remote_pub.publish(apub);
 		remote_pub.publish(rem_msg);
+		control_pub.publish(ctrl_msg);
 
 		ros::spinOnce();
 
