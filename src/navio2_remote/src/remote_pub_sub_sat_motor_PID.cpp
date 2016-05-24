@@ -29,7 +29,7 @@ float currentRoll;
 ros::Time currentTime;
 ros::Time previousTime;
 
-float currentSpeed
+float currentSpeed;
 ros::Time currentTimeSpeed;
 ros::Time previousTimeSpeed;
 
