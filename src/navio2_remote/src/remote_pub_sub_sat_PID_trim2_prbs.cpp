@@ -15,6 +15,7 @@
 #define MAX_IERR 4
 #define PRBS_FREQ 25
 #define PI 3.14159
+#define MAX_ROLL_ANGLE 20.0f
 
 float currentRoll;
 ros::Time currentTime;
@@ -295,7 +296,7 @@ int main(int argc, char **argv)
 			motor_input = rcin.read(3);
 
 		//read desired roll angle with remote ( 1250 to 1750 ) to range of -30 to 30 deg
-		desired_roll = -((float)rcin.read(2)-1500.0f)*30.0f/250.0f;
+		desired_roll = -((float)rcin.read(2)-1500.0f)*MAX_ROLL_ANGLE/250.0f;
 		ROS_INFO("rcin usec = %d    ---   desired roll = %f", rcin.read(2), desired_roll);
 
 		//roll PRBS
@@ -336,13 +337,13 @@ int main(int argc, char **argv)
 
 		
 		// low pass filtering of the speed with tau = 0.1
-		float alpha = 0.01f/(0.01f+0.1f);
+		float alpha = (1.0f/freq)/((1.0f/freq)+0.1f);
 		speed_filt = alpha*speed + (1.0f-alpha)*speed_filt;
 
 		//save values into msg container for the control readings
 
 		ctrl_msg.header.stamp = ros::Time::now();
-		ctrl_msg.temperature = speed;//_filt;
+		ctrl_msg.temperature = speed_filt;
 		ctrl_msg.variance = desired_roll;//here it's supposed to be the desired roll
 
 
