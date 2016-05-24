@@ -72,7 +72,7 @@ int pid_Servo_Output(int desired_roll)
 	//PID CONTROLLER
 	float controlSignal = Kp*err + Kierr + Kd*derr; // should be between +- 22 deg
 	
-	int pwmSignal = (int)(((-controlSignal*250.0f)/22.0f)+(SERVO_TRIM);
+	int pwmSignal = (int)((-controlSignal*250.0f)/22.0f)+(SERVO_TRIM);
 	if(pwmSignal > 1750) pwmSignal = 1750;
 	if(pwmSignal < 1250) pwmSignal = 1250;
 
@@ -105,7 +105,7 @@ int pid_Motor_Output(int desired_speed) // desired speed in m/s
 	//PID CONTROLLER
 	float controlSignal = Kp_m*err_m + Kierr_m + Kd_m*derr_m; // should be between 0 and 20.6m/s (3900*8.4*0.4*0.24*2*pi/60*62.5*10-3)
 	
-	int pwmSignal = (int)(((controlSignal*500.0f)/20.6f)+1500;
+	int pwmSignal = (int)((controlSignal*500.0f)/20.6f)+1500;
 	if(pwmSignal > 2000) pwmSignal = 2000;
 	if(pwmSignal < 1500) pwmSignal = 1500;
 
@@ -282,6 +282,7 @@ int main(int argc, char **argv)
 	sensor_msgs::Temperature ctrl_msg;
 
 	float desired_roll = 0;
+	float desired_speed = 0;
 
 	//prbs start state
 	int start_state = 0x7D0;
