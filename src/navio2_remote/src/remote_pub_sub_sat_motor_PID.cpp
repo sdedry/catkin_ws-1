@@ -23,7 +23,7 @@
 #define Ki 0.0f
 #define Kd 0.03f
 
-#define MAX_IERR_MOTOR 0
+#define MAX_IERR_MOTOR 8
 
 float currentRoll;
 ros::Time currentTime;
@@ -46,8 +46,12 @@ float Kp_m;
 float Ki_m;
 float Kd_m;
 
+float RollOffset = 0; // offset to add to roll measurement for initial calibration
+
+int the_time = 0;
+
 int pid_Servo_Output(int desired_roll)
-{
+{//	ROS_INFO("pid servo");
 	//calculate errors
 	float previousErr = err;
 	
@@ -80,7 +84,7 @@ int pid_Servo_Output(int desired_roll)
 }
 
 int pid_Motor_Output(int desired_speed) // desired speed in m/s
-{
+{//	ROS_INFO("Pid motor");
 	//calculate errors
 	float previousErr = err_m;
 	
@@ -113,19 +117,24 @@ int pid_Motor_Output(int desired_speed) // desired speed in m/s
 }
 
 void read_Imu(sensor_msgs::Imu imu_msg)
-{
+{//	ROS_INFO("IMU");
 	//save the time of the aquisition
 	previousTime = currentTime;
 	currentTime = imu_msg.header.stamp;
-	ROS_INFO("time prev %d time now %d",previousTime.nsec, currentTime.nsec );
+	//ROS_INFO("time prev %d time now %d",previousTime.nsec, currentTime.nsec );
 	//current roll angle
 	currentRoll = imu_msg.orientation.x;
+	ROS_INFO("Time %d", the_time);
 	ROS_INFO("current roll %f", currentRoll);
+	if(the_time < 15) RollOffset = currentRoll;
+	ROS_INFO("Roll Offset %f", RollOffset);
+	currentRoll -= RollOffset;
+	ROS_INFO("New Roll %f", currentRoll);
 }
 
 int main(int argc, char **argv)
 {
-	ROS_INFO("Start");
+//	ROS_INFO("Start");
 	int saturation = 2000;
 	int freq = 100;
 	Kp_m = 0;
@@ -235,7 +244,7 @@ int main(int argc, char **argv)
 	/****************************/
 	/* Initialize the PID Stuff */
 	/****************************/
-
+	
 	currentRoll = 0;
 	currentTime = ros::Time::now();
 	previousTime = ros::Time::now();
@@ -268,7 +277,7 @@ int main(int argc, char **argv)
 		fprintf(stderr, "Servo Output Enable not set. Are you root?\n");
 		return 0;
     	}
-
+	//ROS_INFO("l");
 	motor.enable(MOTOR_PWM_OUT);
 	servo.enable(SERVO_PWM_OUT);
 
@@ -299,15 +308,17 @@ int main(int argc, char **argv)
 	float speed_filt = 0;
 	int dtf = 0;// dtf read from arduino. dtf = dt*4 in msec
 	float R = 0.0625f; //Rear Wheel Radius
-
+	//ROS_INFO("Init");
+	RollOffset = 0;
+	int initTime = ros::Time::now().sec%1000;
 	while (ros::ok())
 	{
-		
+	//	ROS_INFO("Loop");
 		ctr %= freq/PRBS_FREQ;
 
 		//read desired roll angle with remote ( 1250 to 1750 ) to range of -30 to 30 deg
 		desired_roll = -((float)rcin.read(2)-1500.0f)*MAX_ROLL_ANGLE/250.0f;
-		ROS_INFO("rcin usec = %d    ---   desired roll = %f", rcin.read(2), desired_roll);
+		//ROS_INFO("rcin usec = %d    ---   desired roll = %f", rcin.read(2), desired_roll);
 
 		//roll PRBS
 		if(!ctr)
@@ -335,7 +346,7 @@ int main(int argc, char **argv)
 			desired_pwm = saturation;
 		else
 			desired_pwm = rcin.read(3);
-
+	//	ROS_INFO("mid");
 		//get derired speed in m/s using desired pwm
 		desired_speed = 20.6f*((float)desired_pwm-1500)/(500.0f);
 		if(desired_speed < 0) desired_speed = 0.0f;
@@ -363,25 +374,28 @@ int main(int argc, char **argv)
 		//write readings on pwm output
 		motor.set_duty_cycle(MOTOR_PWM_OUT, ((float)motor_input)/1000.0f); 
 		servo.set_duty_cycle(SERVO_PWM_OUT, ((float)servo_input)/1000.0f);
-		
-		
-
 
 		
+		//ROS_INFO("Ros Time");
+		the_time = ros::Time::now().sec%1000-initTime;
+		//ROS_INFO("%d", time);
+		//Calibration of Roll measurement !
+		
+
 
 		//save values into msg container a
 		rem_msg.header.stamp = ros::Time::now();
-		rem_msg.temperature = motor_input;
-		rem_msg.variance = servo_input;
+		rem_msg.temperature = desired_speed;//motor_input;
+		rem_msg.variance = desired_roll;//servo_input;
 
 		//save values into msg container for the control readings
 		ctrl_msg.header.stamp = ros::Time::now();
-		ctrl_msg.temperature = speed_filt;
-		ctrl_msg.variance = desired_roll;//here it's supposed to be the desired roll
+		ctrl_msg.temperature = currentSpeed;
+		ctrl_msg.variance = currentRoll;//desired_roll;//here it's supposed to be the desired roll
 
 
 		//debug info
-		printf("[Thrust:%d] - [Steering:%d] - [dtf:%4d] - [Speed:%2.2f]\n", motor_input, servo_input, dtf, speed_filt);
+		//printf("[Thrust:%d] - [Steering:%d] - [dtf:%4d] - [Speed:%2.2f]\n", motor_input, servo_input, dtf, speed_filt);
 
 		//remote_pub.publish(apub);
 		remote_pub.publish(rem_msg);
