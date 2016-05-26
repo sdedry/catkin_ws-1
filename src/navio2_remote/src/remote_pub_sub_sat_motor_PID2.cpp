@@ -340,9 +340,9 @@ int main(int argc, char **argv)
 			lfsr = (lfsr >> 1) | (bit << 8); //was bit << 10 before
 
 			if (bit == 1)
-				steer_prbs = servo_input + steer_high; // the prbs is now a disturbance on the servo position that the controller needs to correct
+				steer_prbs = steer_high; // the prbs is now a disturbance on the servo position that the controller needs to correct
 			else if (bit == 0)
-				steer_prbs = servo_input + steer_low;
+				steer_prbs = steer_low;
 			else
 				steer_prbs = servo_input;
 		}
@@ -352,7 +352,7 @@ int main(int argc, char **argv)
 		if (currentRoll > (float)MAX_ROLL_ANGLE/2.0f || currentRoll < -(float)MAX_ROLL_ANGLE/2.0f)
 			servo_input = servo_input;
 		else
-			servo_input = steer_prbs;
+			servo_input = servo_input + steer_prbs;
 
 		///////////////////////////////////////////////////////////////
 		//                     VELOCITY STUFF                        //
@@ -406,7 +406,7 @@ int main(int argc, char **argv)
 
 		//save values into msg container a
 		rem_msg.header.stamp = ros::Time::now();
-		rem_msg.temperature = desired_speed;//motor_input;
+		rem_msg.temperature = steer_prbs*22.0f/250.0f;//desired_speed;//motor_input;
 		rem_msg.variance = desired_roll;//servo_input;
 
 		//save values into msg container for the control readings
