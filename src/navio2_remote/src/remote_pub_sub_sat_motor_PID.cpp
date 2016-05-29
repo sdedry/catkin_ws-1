@@ -23,7 +23,7 @@
 #define Ki 0.0f
 #define Kd 0.03f
 
-#define MAX_IERR_MOTOR 8
+#define MAX_IERR_MOTOR 20.6
 
 float currentRoll;
 ros::Time currentTime;
