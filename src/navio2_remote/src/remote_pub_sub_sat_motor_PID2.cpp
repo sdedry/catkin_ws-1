@@ -125,9 +125,9 @@ void read_Imu(sensor_msgs::Imu imu_msg)
 	//current roll angle
 	currentRoll = imu_msg.orientation.x;
 	ROS_INFO("Time %d", the_time);
-	ROS_INFO("current roll %f", currentRoll);
+	//ROS_INFO("current roll %f", currentRoll);
 	if(the_time < 15) RollOffset = currentRoll;
-	ROS_INFO("Roll Offset %f", RollOffset);
+	//ROS_INFO("Roll Offset %f", RollOffset);
 	currentRoll -= RollOffset;
 	ROS_INFO("New Roll %f", currentRoll);
 }
@@ -385,7 +385,8 @@ int main(int argc, char **argv)
 
 		//calculate output to motor from pid controller
 		motor_input = pid_Motor_Output(desired_speed);
-
+		if(desired_pwm < 1500)
+			motor_input = desired_pwm;
 
 
 
@@ -399,7 +400,7 @@ int main(int argc, char **argv)
 		//Measure time for initial roll calibration
 		the_time = ros::Time::now().sec%1000-initTime;
 
-		
+		ROS_INFO("Current Speed :%f", currentSpeed);
 		///////////////////////////////////////////////////////////////
 		//                     MESSAGING STUFF                       //
 		///////////////////////////////////////////////////////////////

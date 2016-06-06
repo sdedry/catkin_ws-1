@@ -15,7 +15,7 @@
 #define MAX_IERR 4
 #define PRBS_FREQ 25
 #define PI 3.14159
-#define MAX_ROLL_ANGLE 20.0f
+#define MAX_ROLL_ANGLE 10.0f
 #define SERVO_TRIM 1440.0f
 
 // PID for roll angle
@@ -125,9 +125,9 @@ void read_Imu(sensor_msgs::Imu imu_msg)
 	//current roll angle
 	currentRoll = imu_msg.orientation.x;
 	ROS_INFO("Time %d", the_time);
-	ROS_INFO("current roll %f", currentRoll);
+	//ROS_INFO("current roll %f", currentRoll);
 	if(the_time < 15) RollOffset = currentRoll;
-	ROS_INFO("Roll Offset %f", RollOffset);
+	//ROS_INFO("Roll Offset %f", RollOffset);
 	currentRoll -= RollOffset;
 	ROS_INFO("New Roll %f", currentRoll);
 }
@@ -334,7 +334,9 @@ int main(int argc, char **argv)
 				roll_prbs = desired_roll;
 		}
 		ctr++;
-		if (desired_roll > roll_high || desired_roll < roll_low)
+		if (desired_roll > roll_high || desired_roll < roll_low ||
+			 currentRoll > MAX_ROLL_ANGLE ||
+			 currentRoll < -MAX_ROLL_ANGLE)
 			desired_roll = desired_roll;
 		else
 			desired_roll = roll_prbs;
@@ -367,7 +369,8 @@ int main(int argc, char **argv)
 
 		//calculate output to motor from pid controller
 		motor_input = pid_Motor_Output(desired_speed);
-
+		if(desired_pwm < 1500)
+			motor_input = desired_pwm;
 		//calculate output to servo from pid controller
 		servo_input = pid_Servo_Output(desired_roll);
 		
@@ -393,7 +396,7 @@ int main(int argc, char **argv)
 		ctrl_msg.temperature = currentSpeed;
 		ctrl_msg.variance = currentRoll;//desired_roll;//here it's supposed to be the desired roll
 
-
+		ROS_INFO("DESIRED SPEED : %2.2f     CURRENT SPEED %2.2f", desired_speed, currentSpeed);
 		//debug info
 		//printf("[Thrust:%d] - [Steering:%d] - [dtf:%4d] - [Speed:%2.2f]\n", motor_input, servo_input, dtf, speed_filt);
 
