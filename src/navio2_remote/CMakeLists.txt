@@ -124,6 +124,8 @@ add_executable(remote_pub_sub src/remote_pub_sub.cpp)
 add_library(rcinput src/RCInput.cpp)
 add_library(pwm src/PWM.cpp)
 add_library(util src/Util.cpp)
+add_library(rgbled src/RGBled.cpp)
+
 target_link_libraries(remote_pub_sub ${catkin_LIBRARIES})
 target_link_libraries(remote_pub_sub rcinput)
 target_link_libraries(remote_pub_sub pwm)
@@ -189,6 +191,13 @@ target_link_libraries(remote_pub_sub_sat_motor_PID2 ${catkin_LIBRARIES})
 target_link_libraries(remote_pub_sub_sat_motor_PID2 rcinput)
 target_link_libraries(remote_pub_sub_sat_motor_PID2 pwm)
 target_link_libraries(remote_pub_sub_sat_motor_PID2 util)
+
+add_executable(remote_pub_sub_sat_8_shape src/remote_pub_sub_sat_8_shape.cpp)
+target_link_libraries(remote_pub_sub_sat_8_shape ${catkin_LIBRARIES})
+target_link_libraries(remote_pub_sub_sat_8_shape rcinput)
+target_link_libraries(remote_pub_sub_sat_8_shape pwm)
+target_link_libraries(remote_pub_sub_sat_8_shape util)
+target_link_libraries(remote_pub_sub_sat_8_shape rgbled)
 
 ## Declare a C++ library
 # add_library(navio2_remote
