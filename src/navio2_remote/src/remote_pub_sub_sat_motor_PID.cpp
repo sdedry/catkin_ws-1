@@ -354,7 +354,7 @@ int main(int argc, char **argv)
 		if(desired_speed < 0) desired_speed = 0.0f;
 
 		//Read current Speed in m/s
-		dtf = rcin.read(4)-1000;
+		dtf = rcin.read(5)-1000;
 		speed = 4.0f*PI*R*1000.0f/((float)dtf);
 		if(speed < 0 || dtf < 40) speed = 0;
 		
@@ -399,7 +399,7 @@ int main(int argc, char **argv)
 		ROS_INFO("DESIRED SPEED : %2.2f     CURRENT SPEED %2.2f", desired_speed, currentSpeed);
 		//debug info
 		//printf("[Thrust:%d] - [Steering:%d] - [dtf:%4d] - [Speed:%2.2f]\n", motor_input, servo_input, dtf, speed_filt);
-
+		printf("RcVals > %4d %4d %4d %4d %4d %4d %4d %4d\n",rcin.read(0), rcin.read(1), rcin.read(2), rcin.read(3), rcin.read(4), rcin.read(5), rcin.read(6), rcin.read(7));
 		//remote_pub.publish(apub);
 		remote_pub.publish(rem_msg);
 		control_pub.publish(ctrl_msg);
