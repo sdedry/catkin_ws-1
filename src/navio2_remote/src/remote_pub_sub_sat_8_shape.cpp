@@ -304,6 +304,7 @@ int main(int argc, char **argv)
 			if(rcin.read(4) > 1500)
 			{
 				active_8 = !active_8;
+				ref_counter = 0;
 	//			led.setColor(Colors::Green);
 			}
 		}		
