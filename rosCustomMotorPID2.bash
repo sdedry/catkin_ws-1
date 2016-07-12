@@ -1,7 +1,7 @@
 #!/bin/bash
 SESSION=$USER
 
-#2 args : frequency, saturation, default = no log
+#no log
 if [ "$#" -eq 6 ] 
 then
     tmux -2 new-session -d -s $SESSION
@@ -21,7 +21,7 @@ then
     tmux send-keys "source /home/pi/catkin_ws/devel/setup.bash" C-m
     tmux send-keys "rosrun navio2_remote remote_pub_sub_sat_motor_PID2 $1 $2 $3 $4 $5 $6" C-m
 
-#3 args : frequency, saturation, logging = on
+#logging = on
 elif [ "$#" -eq 7 ]
 then
   if [ "$7" == "-log" ]

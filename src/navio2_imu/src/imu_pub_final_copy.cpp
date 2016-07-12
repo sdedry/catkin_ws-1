@@ -82,7 +82,7 @@ void imuLoop()
 
     float dtsum = 0.0f; //sum of delta t's
 
-    while(dtsum < 1.0f/freq) //run this loop at 1300 Hz (Max frequency gives best results for Mahony filter)
+    while(dtsum < 1.0f/freq) //run this loop at 1300 Hz
     {
 		//----------------------- Calculate delta time ----------------------------
 
@@ -134,6 +134,7 @@ void imuLoop()
 
 	    //------------------------ Read Euler angles ------------------------------
 
+	    //ahrs.getEuler(&pitch, &roll, &yaw);//roll and pitch inverted 
 	    ahrs.getEuler(&pitch, &roll, &yaw);
 
 	    //------------------- Discard the time of the first cycle -----------------
@@ -170,6 +171,7 @@ void init_imu_msg(sensor_msgs::Imu* imu_msg)
 	imu_msg->linear_acceleration.y = 0.0f;
 	imu_msg->linear_acceleration.z = 0.0f;
 
+	//Create a cov matrix of [1 0 0; 0 1 0; 0 0 1]
 	for(int i = 0; i < 9; i++)
 	{
 		imu_msg->orientation_covariance[i] = !(i%4);
@@ -187,6 +189,7 @@ void init_mf_msg(sensor_msgs::MagneticField* mf_msg)
 	mf_msg->magnetic_field.y = 0.0f;
 	mf_msg->magnetic_field.z = 0.0f;
 
+	//Create a cov matrix of [1 0 0; 0 1 0; 0 0 1]
 	for(int i = 0; i < 9; i++)
 	{
 		mf_msg->magnetic_field_covariance[i] = !(i%4);
@@ -242,7 +245,8 @@ void update_mf_msg(sensor_msgs::MagneticField* mf_msg, InertialSensor* imu)
 
 int main(int argc, char **argv)
 {
-	// The parameter to this function is the running frequency
+	//int freq = 30;
+
 	if(argc == 2)
 	{
 		if(atoi(argv[1]) > 0)
@@ -267,6 +271,7 @@ int main(int argc, char **argv)
 	ros::Publisher imu_pub = n.advertise<sensor_msgs::Imu>("imu_readings", 1000);
 	ros::Publisher mf_pub = n.advertise<sensor_msgs::MagneticField>("mag_readings", 1000);
 
+	//running rate = 30 Hz
 	ros::Rate loop_rate(freq);
 
 	/*************************/
@@ -289,22 +294,18 @@ int main(int argc, char **argv)
 
 	while (ros::ok())
 	{
-		//acquire data
+		//clear(); // clear defined on top
 		imuLoop();
 
-		//create messages
 		sensor_msgs::Imu imu_msg;
 		sensor_msgs::MagneticField mf_msg;
-		
-		//initialize messages with 0's
+
 		init_imu_msg(&imu_msg);
 		init_mf_msg(&mf_msg);
 
-		//put real measured values in the messages
 		update_imu_msg(&imu_msg, imu);
 		update_mf_msg(&mf_msg, imu);
 
-		//publish the messages on the topics
 		imu_pub.publish(imu_msg);
 		mf_pub.publish(mf_msg);
 

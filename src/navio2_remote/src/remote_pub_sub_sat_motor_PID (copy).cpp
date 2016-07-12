@@ -8,7 +8,6 @@
 #include "sensor_msgs/Imu.h"
 #include <sstream>
 
-//PWM Pins on Navio2
 #define MOTOR_PWM_OUT 9
 #define SERVO_PWM_OUT 0
 
@@ -16,7 +15,7 @@
 #define MAX_IERR 4
 #define PRBS_FREQ 25
 #define PI 3.14159
-#define MAX_ROLL_ANGLE 20.0f //select a limit
+#define MAX_ROLL_ANGLE 10.0f
 #define SERVO_TRIM 1440.0f
 
 // PID for roll angle
@@ -25,7 +24,7 @@
 #define Kd 0.03f
 
 //full range of motor
-#define MAX_IERR_MOTOR 20.6 
+#define MAX_IERR_MOTOR 20.6
 
 float currentRoll;
 ros::Time currentTime;
@@ -35,17 +34,15 @@ float currentSpeed;
 ros::Time currentTimeSpeed;
 ros::Time previousTimeSpeed;
 
-//Roll Errors
 float err;
 float derr;
 float Kierr;
 
-//Motor Errors
 float err_m;
 float derr_m;
 float Kierr_m;
 
-//Motor PID parameters to pass
+//parameters to pass
 float Kp_m;
 float Ki_m;
 float Kd_m;
@@ -54,16 +51,17 @@ float RollOffset = 0; // offset to add to roll measurement for initial calibrati
 
 int the_time = 0;
 
-int pid_Servo_Output(int desired_roll) //in degrees
-{
+int pid_Servo_Output(int desired_roll)
+{//	ROS_INFO("pid servo");
 	//calculate errors
 	float previousErr = err;
+	
 	err = desired_roll - currentRoll;
 
 	long timeNow = currentTime.nsec;
 
 	//time between now and last roll message we got
-	double dTnsec = (timeNow - previousTime.nsec); // in nanoseconds
+	double dTnsec = (timeNow - previousTime.nsec);///(10e9f); //in sec
 	if(dTnsec < 0) dTnsec += 1e9; // watch out cause its in ns so if it goes beyond 1 sec ...
 	double dT = dTnsec/(1e9f);
 
@@ -72,12 +70,12 @@ int pid_Servo_Output(int desired_roll) //in degrees
 
 	Kierr += Ki*err*dT;
 
-	//anti wind-up (saturation)
+	//old anti wind-up (saturation)
 	if(Kierr > MAX_IERR) Kierr = MAX_IERR;
 	if(Kierr < -MAX_IERR) Kierr = -MAX_IERR;
 	
 	//PID CONTROLLER
-	float controlSignal = Kp*err + Kierr + Kd*derr; // should be between +- 22 deg (steer limit)
+	float controlSignal = Kp*err + Kierr + Kd*derr; // should be between +- 22 deg
 	
 	int pwmSignal = (int)((-controlSignal*250.0f)/22.0f)+(SERVO_TRIM);
 	if(pwmSignal > 1750) pwmSignal = 1750;
@@ -87,15 +85,16 @@ int pid_Servo_Output(int desired_roll) //in degrees
 }
 
 int pid_Motor_Output(int desired_speed) // desired speed in m/s
-{
+{//	ROS_INFO("Pid motor");
 	//calculate errors
 	float previousErr = err_m;
+	
 	err_m = desired_speed - currentSpeed;
 
 	long timeNow = currentTimeSpeed.nsec;
 
 	//time between now and last roll message we got
-	double dTnsec = (timeNow - previousTimeSpeed.nsec); // in nanoseconds
+	double dTnsec = (timeNow - previousTimeSpeed.nsec);///(10e9f); //in sec
 	if(dTnsec < 0) dTnsec += 1e9; // watch out cause its in ns so if it goes beyond 1 sec ...
 	double dT = dTnsec/(1e9f);
 
@@ -119,25 +118,24 @@ int pid_Motor_Output(int desired_speed) // desired speed in m/s
 }
 
 void read_Imu(sensor_msgs::Imu imu_msg)
-{
+{//	ROS_INFO("IMU");
 	//save the time of the aquisition
 	previousTime = currentTime;
 	currentTime = imu_msg.header.stamp;
-
+	//ROS_INFO("time prev %d time now %d",previousTime.nsec, currentTime.nsec );
 	//current roll angle
 	currentRoll = imu_msg.orientation.x;
 	ROS_INFO("Time %d", the_time);
-
-	//keep calibration after 15 seconds
+	//ROS_INFO("current roll %f", currentRoll);
 	if(the_time < 15) RollOffset = currentRoll;
-
+	//ROS_INFO("Roll Offset %f", RollOffset);
 	currentRoll -= RollOffset;
 	ROS_INFO("New Roll %f", currentRoll);
 }
 
 int main(int argc, char **argv)
 {
-
+//	ROS_INFO("Start");
 	int saturation = 2000;
 	int freq = 100;
 	Kp_m = 0;
@@ -178,7 +176,7 @@ int main(int argc, char **argv)
 	}
 	else if(argc == 6)
 	{
-		//case with frequency and saturation and PID for motor
+		//case with frequency and saturation
 		if(atoi(argv[1]) > 0 )
 			freq = atoi(argv[1]);
 		else
@@ -197,7 +195,7 @@ int main(int argc, char **argv)
 	}
 	else if(argc == 7)
 	{
-		//case with frequency, saturation, PID, and PRBS
+		//case with frequency and saturation
 		if(atoi(argv[1]) > 0 )
 			freq = atoi(argv[1]);
 		else
@@ -214,10 +212,9 @@ int main(int argc, char **argv)
 		Kd_m = atof(argv[5]);
 
 		prbs_val = atoi(argv[6]);
-		if(prbs_val > 500 || prbs_val < 0)
+		if(prbs_val > 30 || prbs_val < 0)
 		{
-			//microsencond for servo disturbance
-			ROS_INFO("prbs val must be between 0 and 500");
+			ROS_INFO("prbs val must be between 0 and 30");
 			return 0;
 		}
 		
@@ -249,7 +246,6 @@ int main(int argc, char **argv)
 	/* Initialize the PID Stuff */
 	/****************************/
 	
-	//Roll Control
 	currentRoll = 0;
 	currentTime = ros::Time::now();
 	previousTime = ros::Time::now();
@@ -257,7 +253,6 @@ int main(int argc, char **argv)
 	err = 0;
 	derr = 0;
 
-	//Motor Control
 	currentSpeed = 0;
 	currentTimeSpeed = ros::Time::now();
 	previousTimeSpeed = ros::Time::now();
@@ -283,17 +278,17 @@ int main(int argc, char **argv)
 		fprintf(stderr, "Servo Output Enable not set. Are you root?\n");
 		return 0;
     	}
-
+	//ROS_INFO("l");
 	motor.enable(MOTOR_PWM_OUT);
 	servo.enable(SERVO_PWM_OUT);
 
-	motor.set_period(MOTOR_PWM_OUT, 50); //frequency 50Hz for PWM
+	motor.set_period(MOTOR_PWM_OUT, 50); //frequency 50Hz
 	servo.set_period(SERVO_PWM_OUT, 50); 
 
 	int motor_input = 0;
 	int servo_input = 0;
 
-	sensor_msgs::Temperature rem_msg; //use of Temperature type messages. Because 2 floats
+	sensor_msgs::Temperature rem_msg;
 	sensor_msgs::Temperature ctrl_msg;
 
 	float desired_roll = 0;
@@ -303,9 +298,9 @@ int main(int argc, char **argv)
 	int start_state = 0x7D0;
 	int lfsr = start_state;
 
-	int steer_low =  - prbs_val;
-	int steer_high=  + prbs_val;
-	int steer_prbs = SERVO_TRIM + steer_low;
+	int roll_low =  - prbs_val;
+	int roll_high=  + prbs_val;
+	int roll_prbs = roll_low;
 
 	int ctr = 0; //counter for the period divider 
 
@@ -314,54 +309,39 @@ int main(int argc, char **argv)
 	float speed_filt = 0;
 	int dtf = 0;// dtf read from arduino. dtf = dt*4 in msec
 	float R = 0.0625f; //Rear Wheel Radius
-
+	//ROS_INFO("Init");
 	RollOffset = 0;
 	int initTime = ros::Time::now().sec%1000;
-
-	/*******************************************/
-	/*             MAIN ROS LOOP               */
-	/*******************************************/
-
 	while (ros::ok())
 	{
-		//PRBS Frequency setup
+	//	ROS_INFO("Loop");
 		ctr %= freq/PRBS_FREQ;
 
-		/*******************************************/
-		/*             ROLL SECTION                */
-		/*******************************************/
-
-		//read desired roll angle with remote ( 1250 to 1750 ) to range limited by defines
+		//read desired roll angle with remote ( 1250 to 1750 ) to range of -30 to 30 deg
 		desired_roll = -((float)rcin.read(2)-1500.0f)*MAX_ROLL_ANGLE/250.0f;
-		
-		//calculate output to servo from pid controller
-		servo_input = pid_Servo_Output(desired_roll);
+		//ROS_INFO("rcin usec = %d    ---   desired roll = %f", rcin.read(2), desired_roll);
 
-		//steer PRBS
+		//roll PRBS
 		if(!ctr)
 		{
 			int bit = ((lfsr >> 0) ^ (lfsr >> 2)) & 1;
-			lfsr = (lfsr >> 1) | (bit << 8);
+			lfsr = (lfsr >> 1) | (bit << 8); //was bit << 10 before
 
 			if (bit == 1)
-				steer_prbs = steer_high; // the prbs is now a disturbance on the servo position that the controller needs to correct
+				roll_prbs = roll_high;
 			else if (bit == 0)
-				steer_prbs = steer_low;
+				roll_prbs = roll_low;
 			else
-				steer_prbs = servo_input;
+				roll_prbs = desired_roll;
 		}
 		ctr++;
-
-		//determine the final value to output  to servo
-		//prbs added to input if roll angle within boundaries
-		if (currentRoll > (float)MAX_ROLL_ANGLE/2.0f || currentRoll < -(float)MAX_ROLL_ANGLE/2.0f)
-			servo_input = servo_input;
+		if (desired_roll > roll_high || desired_roll < roll_low ||
+			 currentRoll > MAX_ROLL_ANGLE ||
+			 currentRoll < -MAX_ROLL_ANGLE)
+			desired_roll = desired_roll;
 		else
-			servo_input = servo_input + steer_prbs;
+			desired_roll = roll_prbs;
 
-		/*******************************************/
-		/*             VELOCITY SECTION            */
-		/*******************************************/
 
 		//Get Desired PWM Speed using Throttle saturation
 		int desired_pwm = 0;
@@ -369,13 +349,13 @@ int main(int argc, char **argv)
 			desired_pwm = saturation;
 		else
 			desired_pwm = rcin.read(3);
-	
+	//	ROS_INFO("mid");
 		//get derired speed in m/s using desired pwm
 		desired_speed = 20.6f*((float)desired_pwm-1500)/(500.0f);
 		if(desired_speed < 0) desired_speed = 0.0f;
 
 		//Read current Speed in m/s
-		dtf = rcin.read(4)-1000;
+		dtf = rcin.read(5)-1000;
 		speed = 4.0f*PI*R*1000.0f/((float)dtf);
 		if(speed < 0 || dtf < 40) speed = 0;
 		
@@ -392,35 +372,38 @@ int main(int argc, char **argv)
 		motor_input = pid_Motor_Output(desired_speed);
 		if(desired_pwm < 1500)
 			motor_input = desired_pwm;
-
+		//calculate output to servo from pid controller
+		servo_input = pid_Servo_Output(desired_roll);
+		
 		//write readings on pwm output
 		motor.set_duty_cycle(MOTOR_PWM_OUT, ((float)motor_input)/1000.0f); 
 		servo.set_duty_cycle(SERVO_PWM_OUT, ((float)servo_input)/1000.0f);
+
 		
-		//Measure time for initial roll calibration
+		//ROS_INFO("Ros Time");
 		the_time = ros::Time::now().sec%1000-initTime;
+		//ROS_INFO("%d", time);
+		//Calibration of Roll measurement !
+		
 
-		/*******************************************/
-		/*            MESSAGING SECTION            */
-		/*******************************************/
 
-		//save values into msg container
+		//save values into msg container a
 		rem_msg.header.stamp = ros::Time::now();
-		rem_msg.temperature = steer_prbs*22.0f/250.0f;
-		rem_msg.variance = desired_roll;
+		rem_msg.temperature = desired_speed;//motor_input;
+		rem_msg.variance = desired_roll;//servo_input;
 
 		//save values into msg container for the control readings
 		ctrl_msg.header.stamp = ros::Time::now();
 		ctrl_msg.temperature = currentSpeed;
-		ctrl_msg.variance = currentRoll;
+		ctrl_msg.variance = currentRoll;//desired_roll;//here it's supposed to be the desired roll
 
-		//publish messages
+		ROS_INFO("DESIRED SPEED : %2.2f     CURRENT SPEED %2.2f", desired_speed, currentSpeed);
+		//debug info
+		//printf("[Thrust:%d] - [Steering:%d] - [dtf:%4d] - [Speed:%2.2f]\n", motor_input, servo_input, dtf, speed_filt);
+		printf("RcVals > %4d %4d %4d %4d %4d %4d %4d %4d\n",rcin.read(0), rcin.read(1), rcin.read(2), rcin.read(3), rcin.read(4), rcin.read(5), rcin.read(6), rcin.read(7));
+		//remote_pub.publish(apub);
 		remote_pub.publish(rem_msg);
 		control_pub.publish(ctrl_msg);
-
-		/*******************************************/
-		/*            LOOPING SECTION              */
-		/*******************************************/
 
 		ros::spinOnce();
 
