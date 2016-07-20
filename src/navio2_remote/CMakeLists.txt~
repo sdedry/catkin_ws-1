@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(navio2_remote)
 
+#add cpp11 support 
+#set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}")
+
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
@@ -124,7 +127,7 @@ add_executable(remote_pub_sub src/remote_pub_sub.cpp)
 add_library(rcinput src/RCInput.cpp)
 add_library(pwm src/PWM.cpp)
 add_library(util src/Util.cpp)
-add_library(rgbled src/RGBled.cpp)
+#add_library(rgbled src/RGBled.cpp)
 
 target_link_libraries(remote_pub_sub ${catkin_LIBRARIES})
 target_link_libraries(remote_pub_sub rcinput)
@@ -197,6 +200,7 @@ target_link_libraries(remote_pub_sub_sat_8_shape ${catkin_LIBRARIES})
 target_link_libraries(remote_pub_sub_sat_8_shape rcinput)
 target_link_libraries(remote_pub_sub_sat_8_shape pwm)
 target_link_libraries(remote_pub_sub_sat_8_shape util)
+#target_link_libraries(remote_pub_sub_sat_8_shape rgbled)
 
 ## Declare a C++ library
 # add_library(navio2_remote

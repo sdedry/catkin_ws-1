@@ -200,6 +200,14 @@ target_link_libraries(remote_pub_sub_sat_8_shape ${catkin_LIBRARIES})
 target_link_libraries(remote_pub_sub_sat_8_shape rcinput)
 target_link_libraries(remote_pub_sub_sat_8_shape pwm)
 target_link_libraries(remote_pub_sub_sat_8_shape util)
+
+add_executable(remote_multiCtr src/remote_multiCtr.cpp)
+target_link_libraries(remote_multiCtr ${catkin_LIBRARIES})
+target_link_libraries(remote_multiCtr rcinput)
+target_link_libraries(remote_multiCtr pwm)
+target_link_libraries(remote_multiCtr util)
+
+
 #target_link_libraries(remote_pub_sub_sat_8_shape rgbled)
 
 ## Declare a C++ library
