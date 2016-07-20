@@ -90,8 +90,8 @@ float pid_Ref_Output(int desired_roll) //in degrees
 	Kierr2 += Ki2[idx]*err2*dT;
 
 	//anti wind-up (saturation)
-	if(Kierr > MAX_IERR) Kierr2 = MAX_IERR2;
-	if(Kierr < -MAX_IERR) Kierr2 = -MAX_IERR2;
+	if(Kierr > MAX_IERR2) Kierr2 = MAX_IERR2;
+	if(Kierr < -MAX_IERR2) Kierr2 = -MAX_IERR2;
 	
 	//PID CONTROLLER
 	float controlSignal = Kp2[idx]*err2 + Kierr2 + Kd2[idx]*derr2; // should be between +- 30 deg (roll limit)
@@ -320,16 +320,6 @@ int main(int argc, char **argv)
 
 	float desired_roll = 0;
 	float desired_speed = 0;
-
-	//prbs start state
-	int start_state = 0x7D0;
-	int lfsr = start_state;
-
-	int roll_low =  - prbs_val;
-	int roll_high=  + prbs_val;
-	int roll_prbs = roll_low;
-
-	int ctr = 0; //counter for the period divider 
 
 	//speed in m/s
 	float speed = 0;

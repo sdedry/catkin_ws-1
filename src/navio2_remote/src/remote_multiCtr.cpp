@@ -90,8 +90,8 @@ float pid_Ref_Output(int desired_roll) //in degrees
 	Kierr2 += Ki2[idx]*err2*dT;
 
 	//anti wind-up (saturation)
-	if(Kierr > MAX_IERR) Kierr2 = MAX_IERR2;
-	if(Kierr < -MAX_IERR) Kierr2 = -MAX_IERR2;
+	if(Kierr2 > MAX_IERR2) Kierr2 = MAX_IERR2;
+	if(Kierr2 < -MAX_IERR2) Kierr2 = -MAX_IERR2;
 	
 	//PID CONTROLLER
 	float controlSignal = Kp2[idx]*err2 + Kierr2 + Kd2[idx]*derr2; // should be between +- 30 deg (roll limit)
