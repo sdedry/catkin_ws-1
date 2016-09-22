@@ -31,7 +31,7 @@ float Kd2[3] = {0, 0.0465f, 0.0195f};
 //full range of motor
 #define MAX_IERR_MOTOR 20.6
 
-float max_roll_angle = 10.0f;
+float max_roll_angle = 30.0f;
 
 float currentRoll;
 ros::Time currentTime;
@@ -69,8 +69,8 @@ int the_time = 0;
 float pid_Ref_Output(int desired_roll) //in degrees
 {
 	int idx = 0;
-	if(currentSpeed < 4.5f) {idx = 0; max_roll_angle = 10.0f;}
-	else if(currentSpeed < 5.5f && currentSpeed >= 4.5f) {idx = 1; max_roll_angle = 20.0f;}
+	if(currentSpeed < 4.5f) {idx = 0; max_roll_angle = 30.0f;}
+	else if(currentSpeed < 5.5f && currentSpeed >= 4.5f) {idx = 1; max_roll_angle = 30.0f;}
 	else {idx = 2; max_roll_angle = 30.0f;}
 	
 	//calculate errors
@@ -350,8 +350,9 @@ int main(int argc, char **argv)
 
 		//Get Desired PWM Speed using Throttle saturation
 		int desired_pwm = 0;
-		desired_pwm = ((float)rcin.read(3)-1500.0f)*((float)saturation - 1500.0f)/500.0f + 1500.0f;		
-		//if(rcin.read(3) >= saturation)
+		if(rcin.read(3) > 1500) desired_pwm = ((float)rcin.read(3)-1500.0f)*((float)saturation - 1500.0f)/500.0f + 1500.0f;		
+		else desired_pwm = rcin.read(3);
+//if(rcin.read(3) >= saturation)
 		//	desired_pwm = saturation;
 		//else
 		//	desired_pwm = rcin.read(3);
@@ -366,7 +367,7 @@ int main(int argc, char **argv)
 		if(speed < 0 || dtf < 40) speed = 0;
 		
 		// low pass filtering of the speed with tau = 0.1
-		float alpha = (1.0f/freq)/((1.0f/freq)+0.1f);
+		float alpha = (1.0f/freq)/((1.0f/freq)+0.4f);
 		speed_filt = alpha*speed + (1.0f-alpha)*speed_filt;
 
 		//update time for speed control
@@ -375,7 +376,7 @@ int main(int argc, char **argv)
 		currentTimeSpeed = ros::Time::now();
 
 		//calculate output to motor from pid controller
-		motor_input = pid_Motor_Output(desired_speed);
+		motor_input = desired_pwm; // pid_Motor_Output(desired_speed);
 		if(desired_pwm < 1500)
 			motor_input = desired_pwm;
 
